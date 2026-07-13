@@ -1,3 +1,10 @@
+/**
+ * Código que guarda os modelos e outras coisas relacionadas ao
+ * banco de dados do projeto.
+ *
+ * @author André Dias
+ */
+
 const { Sequelize, DataTypes } = require('sequelize');
 const bcrypt = require('bcryptjs');
 
@@ -7,14 +14,26 @@ const sequelize = new Sequelize({
     storage: './database.sqlite'
 });
 
+// Tipo de valor que o ID é
+const ID_DATA_TYPE = DataTypes.BIGINT;
+
+/* Modelos */
+
+/*
+Dicas:
+    - Acesse aqui para obter todos os tipos de valores do sequelize: https://sequelize.org/docs/v7/models/data-types/
+ */
 
 // TODO: definição dos modelos do banco de dados
-// Definição do Modelo User (não tá pronta)
 const User = sequelize.define('User', {
+    id: {
+      type: ID_DATA_TYPE,
+      unique: true,
+      primaryKey: true
+    },
     username: {
         type: DataTypes.STRING,
-        allowNull: false,
-        unique: true
+        allowNull: false
     },
     password: {
         type: DataTypes.STRING,
@@ -28,6 +47,66 @@ const User = sequelize.define('User', {
             user.password = await bcrypt.hash(user.password, salt);
         }
     }
+});
+
+const Endereco = sequelize.define('Endereco', {
+    rua: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    numero: {
+        type: DataTypes.STRING, // string é melhor de lidar do que número
+        allowNull: false
+    },
+    bairro: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    cidade: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    pais: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    complemento: {
+        type: DataTypes.STRING
+    }
+});
+const PerfilVendedor = sequelize.define('PerfilVendedor', {
+    idUser: {
+        type: ID_DATA_TYPE,
+        allowNull: false,
+        unique: true
+    },
+    produtos: {
+        type: DataTypes.ARRAY(ID_DATA_TYPE)
+    }
+});
+const Categoria = sequelize.define('Categoria', {
+
+});
+const Produto = sequelize.define('Produto', {
+
+});
+const Carrinho = sequelize.define('Carrinho', {
+
+});
+const ItemCarrinho = sequelize.define('ItemCarrinho', {
+
+});
+const Pedido = sequelize.define('Pedido', {
+
+});
+const ItemPedido = sequelize.define('ItemPedido', {
+
+});
+const Avaliacao = sequelize.define('Avaliacao', {
+
+});
+const HistoricoEstadoPedido = sequelize.define('HistoricoEstadoPedido', {
+
 });
 
 // Sincroniza o banco

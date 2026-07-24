@@ -10,12 +10,14 @@ const http = require('http');
 const { Server } = require('socket.io');
 const { User } = require('./db');
 const path = require('path');
+const bcrypt = require('bcryptjs');
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-const TAMANHO_SENHA = 67// resenhaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+//se algm mudar isso aqui é ban
+const TAMANHO_SENHA = 6// resenhaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
 // Configuração do EJS
 app.set('views', path.join(__dirname, '../views'));
@@ -39,52 +41,88 @@ app.use(session({
 
 // Rota para a página inical
 app.get('/', (req, res) => {
-    //linha comentada pro amigo testar a pagina de cadastro <3
+    // linha comentada pro amigo testar a pagina de cadastro <3
     //res.render('index');
 
-    res.render('cadastro')
+    res.render('index')
 });
 
-app.get('/cadastro', (req, res) => {
+app.get('/cadastro', (_, res) => {
     res.render('cadastro')
 })
 
-app.post('/cadastro', (req, res) => {
+app.post('/cadastro', async (req, res) => {
 
-    //coleta os dados da pagina
+    // coleta os dados da pagina
     const {username, email, password} = req.body
 
     try{
 
-        //verifica se todos os campos foram preenchidos
-        if(!nome || !email || !password || password.length < TAMANHO_SENHA) {
-            res.render('cadastro', {mensagem: 'preencha todos os campos e a senha deve ter pelo menos 67(mt resenha msm) caracteres'})
+        // verifica se todos os campos foram preenchidos
+        if(!username || !email || !password || password.length < TAMANHO_SENHA) {
+            return res.render('cadastro', {mensagem: 'preencha todos os campos e a senha deve ter pelo menos 67(mt resenha msm) caracteres'})
         }
 
-        //procura um usuario com o email recebido
-        const userExisting = User.findOne({ where: {email} })
+        // procura um usuario com o email recebido
+        const userExisting = await User.findOne({ where: { email } })
 
-        //se achar, vai nos avisando
+        // se achar, vai nos avisando
         if(userExisting){
-            res.render('cadastro', {mesagem: 'esse email já está sendo utilizado.'})
+            return res.render('cadastro', {mensagem: 'esse email já está sendo utilizado.'})
         }
 
-        //o hash da senha está sendo gerado no db.js
-        User.create({
+        // coloca o usuario no database
+        await User.create({
             username,
             email,
-            password
+            password // nao precisa de hash aqui, pois ja esta sendo feito no db.js
         })
 
-        //n tem essa pagina ainda ^_^
-        //res.redirect('/login')
+        //no final, manda o user de volta para a pagina de login
+        res.redirect('/login')
     } catch(err) {
+        // se der erro printa no terminal e manda para a pagina
         console.error(err)
         res.render('cadastro', {mensagem: 'erro interno no servidor'})
     }
 
 })
 
+app.get('/login', (_, res) => {
+    res.render('login', {mensagem : null})
+})
+
+app.post('/login', async (req, res) => {
+
+    const { email, password } = req.body
+
+    try{
+
+        const user = await User.findOne({ where: { email } })
+
+        if(!user) {
+            return res.render('login', {mensagem: 'email ou senha invalidos'})
+        }
+
+        const correctPassword = await bcrypt.compare(password, user.password)
+
+        if(!correctPassword) {
+            return res.render('login', {mensagem : 'email ou senha invalidos'})
+        }
+
+        req.session.user = { 
+            id: user.id,
+            username: user.username,
+            email: user.email
+        }
+
+        res.redirect('/')
+    } catch(err) {
+        console.error(err)
+        res.render('login', {mensagem : 'erro ao fazer o login'})
+    }
+
+})
 
 
 server.listen(3000, () => {

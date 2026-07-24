@@ -18,6 +18,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@sequelize/core": "^7.0.0-alpha.48",
+    "@sequelize/sqlite3": "^7.0.0-alpha.48",
+    "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
     "bootstrap": "^5.3.8",
     "ejs": "^6.0.1",
@@ -27,5 +30,6 @@
     "sequelize": "^6.37.8",
     "socket.io": "^4.8.3",
     "sqlite3": "^5.1.6"
-  }
+  },
+  "keywords": []
 }

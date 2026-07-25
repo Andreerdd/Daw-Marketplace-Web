@@ -1,5 +1,5 @@
 <%- include('partials/header') %>
-<form method="post" action="/cadastro">
+<form method="post" action="/login">
         <h1 class="title-login"> s2 Login do Mercadinho <3 </h1>
             
         <div class="input-box">
@@ -8,9 +8,9 @@
         <div class="input-box">
             <input type="password" placeholder="senha" class="form-control mb-2" autocomplete="off" required minlength="6">
         </div>
-
+        <a href="/cadastro">ainda nao tem conta, cadastre-se</a>
         <div>
-            <button type="submit" class="btn btn-primary">cadastrar</button>
+            <button type="submit" class="btn btn-primary">entrar</button>
         </div>
 <%- include('partials/footer') %>
 

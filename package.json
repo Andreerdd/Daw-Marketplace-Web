@@ -31,5 +31,6 @@
     "socket.io": "^4.8.3",
     "sqlite3": "^5.1.6"
   },
-  "keywords": []
+  "keywords": [],
+  "devDependencies": {}
 }

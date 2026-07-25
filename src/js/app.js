@@ -43,8 +43,8 @@ app.use(session({
 app.get('/', (req, res) => {
     // linha comentada pro amigo testar a pagina de cadastro <3
     //res.render('index');
-
-    res.render('index')
+    if(!req.session.user) return res.redirect('/login')
+    return res.render('index')
 });
 
 app.get('/cadastro', (_, res) => {
@@ -53,6 +53,7 @@ app.get('/cadastro', (_, res) => {
 
 app.post('/cadastro', async (req, res) => {
 
+    console.log(req.body)
     // coleta os dados da pagina
     const {username, email, password} = req.body
 
@@ -63,8 +64,11 @@ app.post('/cadastro', async (req, res) => {
             return res.render('cadastro', {mensagem: 'preencha todos os campos e a senha deve ter pelo menos 67(mt resenha msm) caracteres'})
         }
 
+        console.log("cadastro", email)
         // procura um usuario com o email recebido
+        console.log("antes do findone")
         const userExisting = await User.findOne({ where: { email } })
+        console.log("dps do findone", userExisting)
 
         // se achar, vai nos avisando
         if(userExisting){
@@ -77,9 +81,9 @@ app.post('/cadastro', async (req, res) => {
             email,
             password // nao precisa de hash aqui, pois ja esta sendo feito no db.js
         })
-
+        console.log("user criado")
         //no final, manda o user de volta para a pagina de login
-        res.redirect('/login')
+        return res.redirect('/login')
     } catch(err) {
         // se der erro printa no terminal e manda para a pagina
         console.error(err)
@@ -97,9 +101,9 @@ app.post('/login', async (req, res) => {
     const { email, password } = req.body
 
     try{
-
+        
         const user = await User.findOne({ where: { email } })
-
+        
         if(!user) {
             return res.render('login', {mensagem: 'email ou senha invalidos'})
         }
@@ -115,7 +119,7 @@ app.post('/login', async (req, res) => {
             username: user.username,
             email: user.email
         }
-
+        
         res.redirect('/')
     } catch(err) {
         console.error(err)

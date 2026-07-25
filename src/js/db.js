@@ -29,7 +29,8 @@ const User = sequelize.define('User', {
     id: {
       type: ID_DATA_TYPE,
       unique: true,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
     email: {
         type : DataTypes.STRING,

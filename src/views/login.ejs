@@ -1,16 +1,24 @@
 <%- include('partials/header') %>
-<form method="post" action="/login">
-        <h1 class="title-login"> s2 Login do Mercadinho <3 </h1>
-            
-        <div class="input-box">
-            <input name="email" type="text" placeholder="email" class="form-control mb-2" autocomplete="off" required>
-        </div>
-        <div class="input-box">
-            <input name="password" type="password" placeholder="senha" class="form-control mb-2" autocomplete="off" required minlength="6">
-        </div>
-        <a href="/cadastro">ainda nao tem conta, cadastre-se</a>
-        <div>
-            <button type="submit" class="btn btn-primary">entrar</button>
-        </div>
-<%- include('partials/footer') %>
 
+<div class="container" style="min-width: 480px; width: 50vw;">
+<form method="post" action="/login">
+        <h1>Acessar conta</h1>
+        <label>
+            E-mail
+            <input name="email" type="text" placeholder="" class="input" autocomplete="off" required>
+        </label>
+        <label>
+            Senha
+            <input name="password" type="password" placeholder="" class="input" autocomplete="off" required minlength="6">
+        </label>
+
+        <a href="/cadastro" style="text-align: center; font-size: small;">Não tem uma conta? Crie agora!</a>
+
+        <button type="submit" class="button">Entrar</button>
+    </form>
+    <% if(mensagem) { %>
+        <%= mensagem %>
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>

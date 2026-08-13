@@ -62,7 +62,7 @@ app.post('/cadastro', async (req, res) => {
 
         // verifica se todos os campos foram preenchidos
         if(!username || !email || !password || password.length < TAMANHO_MINIMO_SENHA) {
-            return res.render('cadastro', {mensagem: 'preencha todos os campos e a senha deve ter pelo menos 67(mt resenha msm) caracteres', username: null})
+            return res.render('cadastro', {mensagem: 'Preencha todos os campos corretamente', username: null})
         }
 
         console.log("cadastro", email)
@@ -73,18 +73,25 @@ app.post('/cadastro', async (req, res) => {
 
         // se achar, vai nos avisando
         if(userExisting){
-            return res.render('cadastro', { mensagem: 'esse email já está sendo utilizado.', username: null })
+            return res.render('cadastro', { mensagem: `O e-mail '${email}' já está vinculado à uma conta.`, username: null })
         }
 
         // coloca o usuario no database
-        await User.create({
+        var user = await User.create({
             username,
             email,
             password // nao precisa de hash aqui, pois ja esta sendo feito no db.js
         })
         console.log("user criado")
-        //no final, manda o user de volta para a pagina de login
-        return res.redirect('/login')
+        
+
+        req.session.user = { 
+            id: user.id,
+            username: user.username,
+            email: user.email
+        }
+        
+        res.redirect('/')
     } catch(err) {
         // se der erro printa no terminal e manda para a pagina
         console.error(err)
@@ -106,13 +113,13 @@ app.post('/login', async (req, res) => {
         const user = await User.findOne({ where: { email } })
         
         if(!user) {
-            return res.render('login', {mensagem: 'email ou senha invalidos', username: null})
+            return res.render('login', {mensagem: 'Não encontramos esse usuário!', username: null})
         }
 
         const correctPassword = await bcrypt.compare(password, user.password)
 
         if(!correctPassword) {
-            return res.render('login', {mensagem : 'email ou senha invalidos', username: null})
+            return res.render('login', {mensagem : 'Senha incorreta!', username: null})
         }
 
         req.session.user = { 

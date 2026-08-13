@@ -1,23 +1,28 @@
 <%- include('partials/header') %>
 
-<div class="card-cadastro">
-    <form method="post" action="/cadastro">
-        <h1 class="title-cadastro"> s2 Cadastro do Mercadinho <3 </h1>
-    
-        <div class="input-box">
-            <input type="text" name="username" placeholder="nome" class="form-control mb-2" autocomplete="off" required>
-        </div>
-        <div class="input-box">
-            <input type="text" name="email" placeholder="email" class="form-control mb-2" autocomplete="off" required>
-        </div>
-        <div class="input-box">
-            <input type="password" name="password" placeholder="senha" class="form-control mb-2" autocomplete="off" required minlength="6">
-        </div>
+<div class="container" style="min-width: 480px; width: 50vw;">
+<form method="post" action="/cadastro">
+        <h1>Criar conta</h1>
+        <label>
+            E-mail
+            <input name="email" type="text" placeholder="" class="input" autocomplete="off" required>
+        </label>
+        <label>
+            Nome
+            <input name="username" type="text" placeholder="" class="input" autocomplete="off" required>
+        </label>
+        <label>
+            Senha
+            <input name="password" type="password" placeholder="" class="input" autocomplete="off" required minlength="6">
+        </label>
 
-        <div>
-            <button type="submit" class="btn btn-primary">cadastrar</button>
-        </div>
+        <a href="/login" style="text-align: center; font-size: small;">Já tem uma conta? Acesse-a agora!</a>
+
+        <button type="submit" class="button">Entrar</button>
     </form>
+    <% if(mensagem) { %>
+        <%= mensagem %>
+    <% } %>
 </div>
 
 <%- include('partials/footer') %>

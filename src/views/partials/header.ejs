@@ -1,14 +1,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mercadinho</title>
+    <title>Jueguitos</title>
     <link rel="stylesheet" href="./style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"/>
 </head>
 <body>
     <div class="header">
         <div class="header-left">
-            <a class="mercadinho-logo" href="/"><span class="material-symbols-outlined" style="font-weight: 1000">sell</span>mercadinho</a>
+            <a class="jueguitos-logo" href="/"><span class="icone-logo material-symbols-outlined" style="font-weight: 1000">playing_cards</span>jueguitos</a>
+        
+            <div class="categoria-header">
+                <span>Categorias</span>
+                <div class="categoria-header-menu">
+                    <a>Jogos de Cartas</a>
+                    <a>Jogos de Tabuleiro</a>
+                </div>
+            </div>
         </div>
         <div class="header-right">
             <div class="searchbar">
@@ -18,9 +26,9 @@
 
             <div>
                 <% if (username) { %>
-                    <a id="usuario" href="/logout" class="a">sair (<%= username %>)</a>
+                    <a id="usuario" href="/logout" class="a"><%= username %></a>
                 <% } else { %>
-                    <a id="usuario" href="/login" class="a">login</a>
+                    <a id="usuario" href="/login" class="a">Acessar conta</a>
                 <% } %>
             </div>
         </div>

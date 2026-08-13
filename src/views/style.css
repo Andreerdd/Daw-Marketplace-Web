@@ -1,10 +1,248 @@
-h1, h2, h3, h4, h5, h6, p, span, label {
-    font-family: 'Google Sans', sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+:root {
+  --accent: #e82cb3;
+  --background: #d7dbe2;
+  --background-alt: #ffffff;
+  --text: #1b1827;
 }
-hmtl,body{
-    /*bloquinho mt foda q centraliza as divs*/
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /*fim do bloquinho*/
+
+* {
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html, body {
+  display: flex;
+  flex-direction: column;
+
+  justify-content: space-between;
+  align-content: center;
+  gap: 32px;
+
+  background-color: var(--background);
+  min-height: 100vh;
+
+  font-family: 'Outfit', sans-serif;
+
+  padding: 0;
+  margin: 0;
+
+  width: 100vw;
+
+  font-size: large;
+
+  color: var(--text);
+
+  overflow-x: hidden;
+}
+
+body {
+  padding-top: 64px;
+}
+
+.header {
+  top: 0;
+  position: absolute;
+  
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+
+  justify-content: start;
+  align-items: center;
+
+  background-color: var(--background-alt);
+  padding: 16px;
+  height: 64px;
+
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+.header-left {
+  flex-grow: 1;
+  display: flex;
+
+  gap: 16px;
+}
+
+.header-right {
+  flex-grow: 1;
+  display: flex;
+
+  gap: 16px;
+
+  flex-direction: row;
+  justify-content: end;
+  align-items: center;
+}
+
+.footer {
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+
+  justify-content: center;
+  align-items: center;
+
+  background-color: var(--background-alt);
+  padding: 16px;
+  height: 64px;
+
+  padding-left: 20%;
+  padding-right: 20%;
+}
+
+.mercadinho-logo {
+  font-size: larger;
+  font-weight: bold;
+
+  align-self: flex-start;
+
+  gap: 8px;
+}
+
+.mercadinho-logo:hover {
+  color:var(--accent);
+}
+
+a {
+  text-decoration: none;
+  color: var(--text);
+  transition: 0.2s;
+
+  display: flex;
+  flex-direction: row;
+
+  align-content: center;
+}
+
+a:hover {
+  color:var(--accent);
+}
+
+.botao-form {
+  padding: 8px;
+  padding-left: 64px;
+  padding-right: 64px;
+  background-color: var(--background);
+  border: 2px solid var(--background-alt);
+
+  border-radius: 16px;
+
+  cursor: pointer;
+
+  font-size: large;
+  font-family: 'Outfit';
+  color: var(--text);
+
+  transition: 0.2s;
+}
+
+.botao-form:hover {
+  border-color: var(--accent);
+}
+
+.container {
+  display: flex;
+
+  width: 80%;
+  align-self: center;
+
+  flex-direction: column;
+  justify-items: center;
+  align-content: center;
+
+  background-color: var(--background-alt);
+  border-radius: 16px;
+
+  padding: 16px;
+}
+
+h1, p {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+  gap: 12px;
+}
+
+label {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  gap: 32px;
+}
+
+.input {
+  flex-grow: 1;
+  outline: none;
+  padding: 8px;
+  padding-left: 64px;
+  padding-right: 64px;
+  background-color: var(--background);
+  border: 2px solid var(--background-alt);
+
+  height: 48px;
+
+  border-radius: 16px;
+
+  font-size: large;
+  font-family: 'Outfit';
+  color: var(--text);
+}
+
+.searchbar {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+
+  align-items: center;
+  justify-content: start;
+
+  width: 30vw;
+  
+  outline: none;
+  padding: 8px;
+  padding-right: 16px;
+  background-color: var(--background);
+  border: 2px solid var(--background-alt);
+
+  height: 48px;
+
+  border-radius: 16px;
+
+  font-size: large;
+  font-family: 'Outfit';
+  color: var(--text);
+}
+
+.searchbar input {
+  background: none;
+  outline: none;
+  border: none;
+  height: 100%;
+  width: 100%;
+
+  font-family: 'Outfit';
+  font-size: medium;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24;
 }

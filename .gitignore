@@ -4,3 +4,4 @@
 # ide
 ./.idea
 ./.vscode
+/node_modules

@@ -1,18 +1,4 @@
 <%- include('partials/header') %>
-<h1> Mercado Censurado </h1>
 
- <div class="card shadow-sm">
-  <div class="card-body">
-    <h1 class="h3 mb-3">Bem-vindo</h1>
-    <p class="lead">Esta aplicação demonstra login, controle de acesso e chat em tempo real.</p>
-    <% if (locals.user) { %>
-      <div class="alert alert-success mb-0">
-        Você está logado como <strong><%= usuario.nome %></strong> com papel <strong><%= usuario.papel %></strong>.
-      </div>
-    <% } else { %>
-      <div class="alert alert-info mb-0">Faça cadastro ou login para acessar o sistema.</div>
-    <% } %>
-  </div>
-</div>
 <%- include('partials/footer') %>
 

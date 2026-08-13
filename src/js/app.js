@@ -2,6 +2,7 @@
  * Código principal do projeto.
  *
  * @author André Dias
+ * @author Gabriel Della Gaspera
  */
 
 const express = require('express');
@@ -17,7 +18,7 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 //se algm mudar isso aqui é ban
-const TAMANHO_SENHA = 6// resenhaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+const TAMANHO_MINIMO_SENHA = 6// resenhaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
 // Configuração do EJS
 app.set('views', path.join(__dirname, '../views'));
@@ -43,12 +44,12 @@ app.use(session({
 app.get('/', (req, res) => {
     // linha comentada pro amigo testar a pagina de cadastro <3
     //res.render('index');
-    if(!req.session.user) return res.redirect('/login')
-    return res.render('index')
+    // if(!req.session.user) return res.redirect('/login')
+    return res.render('index', { username : req.session?.user?.username || null });
 });
 
 app.get('/cadastro', (_, res) => {
-    res.render('cadastro')
+    res.render('cadastro', {username : null} )
 })
 
 app.post('/cadastro', async (req, res) => {
@@ -60,8 +61,8 @@ app.post('/cadastro', async (req, res) => {
     try{
 
         // verifica se todos os campos foram preenchidos
-        if(!username || !email || !password || password.length < TAMANHO_SENHA) {
-            return res.render('cadastro', {mensagem: 'preencha todos os campos e a senha deve ter pelo menos 67(mt resenha msm) caracteres'})
+        if(!username || !email || !password || password.length < TAMANHO_MINIMO_SENHA) {
+            return res.render('cadastro', {mensagem: 'preencha todos os campos e a senha deve ter pelo menos 67(mt resenha msm) caracteres', username: null})
         }
 
         console.log("cadastro", email)
@@ -72,7 +73,7 @@ app.post('/cadastro', async (req, res) => {
 
         // se achar, vai nos avisando
         if(userExisting){
-            return res.render('cadastro', {mensagem: 'esse email já está sendo utilizado.'})
+            return res.render('cadastro', { mensagem: 'esse email já está sendo utilizado.', username: null })
         }
 
         // coloca o usuario no database
@@ -87,13 +88,13 @@ app.post('/cadastro', async (req, res) => {
     } catch(err) {
         // se der erro printa no terminal e manda para a pagina
         console.error(err)
-        res.render('cadastro', {mensagem: 'erro interno no servidor'})
+        res.render('cadastro', { mensagem: 'erro interno no servidor', username: null })
     }
 
 })
 
 app.get('/login', (_, res) => {
-    res.render('login', {mensagem : null})
+    res.render('login', { mensagem : null, username : null })
 })
 
 app.post('/login', async (req, res) => {
@@ -105,13 +106,13 @@ app.post('/login', async (req, res) => {
         const user = await User.findOne({ where: { email } })
         
         if(!user) {
-            return res.render('login', {mensagem: 'email ou senha invalidos'})
+            return res.render('login', {mensagem: 'email ou senha invalidos', username: null})
         }
 
         const correctPassword = await bcrypt.compare(password, user.password)
 
         if(!correctPassword) {
-            return res.render('login', {mensagem : 'email ou senha invalidos'})
+            return res.render('login', {mensagem : 'email ou senha invalidos', username: null})
         }
 
         req.session.user = { 
@@ -123,11 +124,15 @@ app.post('/login', async (req, res) => {
         res.redirect('/')
     } catch(err) {
         console.error(err)
-        res.render('login', {mensagem : 'erro ao fazer o login'})
+        res.render('login', {mensagem : 'erro ao fazer o login', username: null})
     }
 
 })
 
+app.get('/logout', async (req, res) => {
+  req.session.destroy();
+  res.redirect('/');
+});
 
 server.listen(3000, () => {
     console.log('Servidor rodando na porta 3000');

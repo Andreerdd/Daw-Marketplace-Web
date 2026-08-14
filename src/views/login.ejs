@@ -16,8 +16,8 @@
 
         <button type="submit" class="button">Entrar</button>
     </form>
-    <% if(mensagem) { %>
-        <%= mensagem %>
+    <% if(locals.mensagem) { %>
+        <span class="mensagem-erro"><%= mensagem %></span>
     <% } %>
 </div>
 

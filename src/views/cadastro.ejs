@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
 
 <div class="container" style="min-width: 480px; width: 50vw;">
-<form method="post" action="/cadastro">
+    <form method="post" action="/cadastro">
         <h1>Criar conta</h1>
         <label>
             E-mail
@@ -20,8 +20,8 @@
 
         <button type="submit" class="button">Entrar</button>
     </form>
-    <% if(mensagem) { %>
-        <%= mensagem %>
+    <% if(locals.mensagem) { %>
+        <span class="mensagem-erro"><%= mensagem %></span>
     <% } %>
 </div>
 

@@ -7,5 +7,11 @@
         <span>Gabriel Della Gaspera</span>
     </div>
 
+<script>
+const tema = localStorage.getItem('tema');
+if (tema) {
+  document.documentElement.setAttribute('tema', tema);
+}
+</script>
 </body>
 </html>

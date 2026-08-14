@@ -2,10 +2,24 @@
 
 :root {
   --accent: #1bceff;
-  --accent-alt: #148dff;
+  --accent-alt: #14a9ff;
+  --background: #1b1827;
+  --background-alt: #252238;
+  --text: #ffffff;
+
+  --error: #f37989;
+  --error-alt: #e95568;
+}
+
+[tema="claro"] {
+  --accent: #1bceff;
+  --accent-alt: #14a9ff;
   --background: #d7dbe2;
   --background-alt: #ffffff;
   --text: #1b1827;
+
+  --error: #f37989;
+  --error-alt: #e95568;
 }
 
 * {
@@ -187,6 +201,7 @@ a:hover {
 
 .container {
   display: flex;
+  position: relative;
 
   width: 80%;
   align-self: center;
@@ -199,6 +214,8 @@ a:hover {
   border-radius: 16px;
 
   padding: 16px;
+
+  gap: 16px;
 }
 
 h1, p {
@@ -218,6 +235,7 @@ label {
   display: flex;
   flex-direction: column;
   justify-content: start;
+  
   align-items: center;
 
   font-size: small;
@@ -252,6 +270,11 @@ label {
   
   z-index: -1;
 }
+
+.input:disabled {
+  background-color: var(--background);
+}
+
 
 .button {
   font-family: 'Outfit';
@@ -306,15 +329,117 @@ label {
   height: 100%;
   width: 100%;
 
+  font-size: medium;
   font-family: 'Outfit';
+  color: var(--text);
+}
+
+.mensagem-erro {
+  background-color: var(--error);
+  padding: 16px;
+  border: 2px solid var(--error-alt);
+  border-radius: 8px;
+
   font-size: medium;
 }
 
-.material-symbols-outlined {
+.botao-deslogar {
+  position: absolute;
+  background-color: var(--error);
+  padding: 4px;
+  border: 2px solid var(--error-alt);
+  border-radius: 8px;
+
+  font-size: medium;
+}
+
+.botao-deslogar:hover {
+  background-color: var(--error-alt);
+  color: initial;
+}
+
+details {
+  padding: 16px;
+  border-radius: 16px;
+  border: 2px solid var(--background);
+  background: none;
+
+  width: 100%;
+}
+
+summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+
+  margin: -16px;
+
+  cursor: pointer;
+  padding: 8px;
+  background-color: var(--background);
+  border-radius: 8px;
   user-select: none;
+
+  font-size: small;
+}
+
+section {
+  outline: none;
+  padding: 8px;
+  padding-left: 16px;
+  padding-right: 16px;
+  margin-top: -16px;
+  background: none;
+  border: 2px solid var(--background);
+
+  border-radius: 8px;
+
+  width: 100%;
+}
+
+section h4 {
+  margin-top: -16px;
+
+  font-weight: normal;
+  font-size: small;
+
+  text-shadow:
+    -2px 2px var(--background-alt),
+    2px 2px var(--background-alt),
+    -2px -2px var(--background-alt),
+    2px -2px var(--background-alt);
+  
+  user-select: none;
+}
+
+
+details[open] summary {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  
+  margin-bottom: 16px;
+}
+
+.perfil-section {
+  display: none;
+}
+
+.perfil-section:target {
+  display: flex;
+}
+
+.material-symbols-outlined {
   font-variation-settings:
   'FILL' 0,
   'wght' 400,
   'GRAD' 0,
   'opsz' 24;
+}
+
+.material-symbols-outlined {
+  font-size: inherit !important;
+  display: inline-block;
+  vertical-align: middle;
+  user-select: none;
 }

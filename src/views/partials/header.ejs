@@ -21,12 +21,14 @@
         <div class="header-right">
             <div class="searchbar">
                 <span class="material-symbols-outlined" style="font-weight: 1000">search</span>
-                <input type="text">
+                <form method="post" action="/pesquisa">
+                    <input type="text" name="search">
+                </form>
             </div>
 
             <div>
-                <% if (username) { %>
-                    <a id="usuario" href="/logout" class="a"><%= username %></a>
+                <% if (locals.username) { %>
+                    <a id="usuario" href="/perfil#conta" class="a"><%= username %></a>
                 <% } else { %>
                     <a id="usuario" href="/login" class="a">Acessar conta</a>
                 <% } %>

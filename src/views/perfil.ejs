@@ -1,0 +1,50 @@
+<%- include('partials/header') %>
+
+<div style="display: flex; flex-direction: row; gap: 8px; align-self: center;">
+    <div class="container" style="max-width: 15vw; width: fit-content;">
+        <a href="#conta">Conta</a>
+        <a href="#preferencias">Preferências</a>
+    </div>
+    <div class="container" style="min-width: 480px; width: 50vw;">
+        <a class="botao-deslogar" href="/logout"><span class="material-symbols-outlined">logout</span>Sair</a>
+        <h1><%= locals.user.username %></h1>
+        
+        <section class="perfil-section" id="conta">
+            <h4>Conta</h4>
+            <form method="post" action="/cadastro">
+                <label>
+                    E-mail
+                    <input type="text" value="<%= locals.user.email %>" class="input" disabled>
+                </label>
+                <label>
+                    Nome
+                    <input name="username" type="text" value="<%= locals.user.username %>" placeholder="" class="input" autocomplete="off" required>
+                </label>
+                <button type="submit" class="button">Salvar</button>
+            </form>
+        </section>
+        
+        <section class="perfil-section" id="preferencias">
+            <h4>Preferências</h4>
+            <label>
+                Tema Escuro
+                <input type="checkbox" id="tema-escuro">
+            </label>
+        </section>
+    </div>
+</div>
+
+<script>
+const temaBotao = document.getElementById("tema-escuro");
+
+if (localStorage.getItem('tema')) {
+  temaBotao.checked = (localStorage.getItem('tema') === "escuro") ? true : false;
+}
+temaBotao.addEventListener('change', (event) => {
+    let tema = event.target.checked ? "escuro" : "claro";
+    document.documentElement.setAttribute('tema', tema);
+    localStorage.setItem('tema', tema);
+});
+</script>
+    
+<%- include('partials/footer') %>

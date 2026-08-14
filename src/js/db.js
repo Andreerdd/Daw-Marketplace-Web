@@ -3,6 +3,7 @@
  * banco de dados do projeto.
  *
  * @author André Dias
+ * @author Gabriel Della Gaspera
  */
 
 const { Sequelize, DataTypes } = require('sequelize');
@@ -44,6 +45,11 @@ const User = sequelize.define('User', {
     password: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    vendor: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     }
 }, {
     hooks: {

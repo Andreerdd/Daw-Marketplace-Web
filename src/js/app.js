@@ -42,17 +42,22 @@ app.use(session({
 
 // Rota para a página inical
 app.get('/', (req, res) => {
-    // linha comentada pro amigo testar a pagina de cadastro <3
-    //res.render('index');
-    // if(!req.session.user) return res.redirect('/login')
     return res.render('index', { username : req.session?.user?.username || null });
 });
 
-app.get('/cadastro', (_, res) => {
-    res.render('cadastro', {username : null} )
+app.get('/perfil', exigirLogin, (req, res) => {
+    return res.render('perfil', { user : req.session?.user, username : req.session?.user?.username });
+});
+
+app.get('/login', exigirUsuarioDeslogado, (_, res) => {
+    res.render('login')
 })
 
-app.post('/cadastro', async (req, res) => {
+app.get('/cadastro', exigirUsuarioDeslogado, (_, res) => {
+    res.render('cadastro')
+})
+
+app.post('/cadastro', exigirUsuarioDeslogado, async (req, res) => {
 
     console.log(req.body)
     // coleta os dados da pagina
@@ -62,7 +67,7 @@ app.post('/cadastro', async (req, res) => {
 
         // verifica se todos os campos foram preenchidos
         if(!username || !email || !password || password.length < TAMANHO_MINIMO_SENHA) {
-            return res.render('cadastro', {mensagem: 'Preencha todos os campos corretamente', username: null})
+            return res.render('cadastro', {mensagem: 'Preencha todos os campos corretamente'})
         }
 
         console.log("cadastro", email)
@@ -73,7 +78,7 @@ app.post('/cadastro', async (req, res) => {
 
         // se achar, vai nos avisando
         if(userExisting){
-            return res.render('cadastro', { mensagem: `O e-mail '${email}' já está vinculado à uma conta.`, username: null })
+            return res.render('cadastro', { mensagem: `O e-mail '${email}' já está vinculado à uma conta.` })
         }
 
         // coloca o usuario no database
@@ -95,16 +100,16 @@ app.post('/cadastro', async (req, res) => {
     } catch(err) {
         // se der erro printa no terminal e manda para a pagina
         console.error(err)
-        res.render('cadastro', { mensagem: 'erro interno no servidor', username: null })
+        res.render('cadastro', { mensagem: 'erro interno no servidor' })
     }
 
 })
 
-app.get('/login', (_, res) => {
-    res.render('login', { mensagem : null, username : null })
+app.get('/login', exigirUsuarioDeslogado, (_, res) => {
+    res.render('login')
 })
 
-app.post('/login', async (req, res) => {
+app.post('/login', exigirUsuarioDeslogado, async (req, res) => {
 
     const { email, password } = req.body
 
@@ -113,13 +118,13 @@ app.post('/login', async (req, res) => {
         const user = await User.findOne({ where: { email } })
         
         if(!user) {
-            return res.render('login', {mensagem: 'Não encontramos esse usuário!', username: null})
+            return res.render('login', {mensagem: 'Não encontramos esse usuário!'})
         }
 
         const correctPassword = await bcrypt.compare(password, user.password)
 
         if(!correctPassword) {
-            return res.render('login', {mensagem : 'Senha incorreta!', username: null})
+            return res.render('login', {mensagem : 'Senha incorreta!'})
         }
 
         req.session.user = { 
@@ -131,15 +136,25 @@ app.post('/login', async (req, res) => {
         res.redirect('/')
     } catch(err) {
         console.error(err)
-        res.render('login', {mensagem : 'erro ao fazer o login', username: null})
+        res.render('login', {mensagem : 'erro ao fazer o login'})
     }
 
 })
 
-app.get('/logout', async (req, res) => {
+app.get('/logout', exigirLogin, async (req, res) => {
   req.session.destroy();
   res.redirect('/');
 });
+
+function exigirLogin(req, res, next) {
+    if(req.session.user?.id) next();
+    else res.redirect('/login');
+}
+
+function exigirUsuarioDeslogado(req, res, next) {
+    if(!req.session.user?.id) next();
+    else res.redirect('/');
+}
 
 server.listen(3000, () => {
     console.log('Servidor rodando na porta 3000');

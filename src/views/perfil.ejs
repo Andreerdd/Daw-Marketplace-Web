@@ -2,16 +2,17 @@
 
 <div style="display: flex; flex-direction: row; gap: 8px; align-self: center;">
     <div class="container" style="max-width: 15vw; width: fit-content;">
-        <a href="#conta">Conta</a>
-        <a href="#preferencias">Preferências</a>
+        <a href="#conta"><span class="material-symbols-outlined">account_circle</span>Conta</a>
+        <a href="#preferencias"><span class="material-symbols-outlined">manufacturing</span>Preferências</a>
+        <a href="#vendedor"><span class="material-symbols-outlined">shopping_basket</span>Loja</a>
     </div>
-    <div class="container" style="min-width: 480px; width: 50vw;">
-        <a class="botao-deslogar" href="/logout"><span class="material-symbols-outlined">logout</span>Sair</a>
+    <div class="container" style="min-width: 320px; width: 30vw; height: 60vh;">
+        <a class="botao-deslogar" href="/logout">sair</a>
         <h1><%= locals.user.username %></h1>
         
         <section class="perfil-section" id="conta">
             <h4>Conta</h4>
-            <form method="post" action="/cadastro">
+            <form method="post" action="/atualizar-cadastro">
                 <label>
                     E-mail
                     <input type="text" value="<%= locals.user.email %>" class="input" disabled>
@@ -29,7 +30,13 @@
             <label>
                 Tema Escuro
                 <input type="checkbox" id="tema-escuro">
+                <span class="pista"></span>
             </label>
+        </section>
+        
+        <section class="perfil-section" id="vendedor">
+            <h4>Loja</h4>
+            
         </section>
     </div>
 </div>

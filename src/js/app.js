@@ -105,6 +105,35 @@ app.post('/cadastro', exigirUsuarioDeslogado, async (req, res) => {
 
 })
 
+app.post('/atualizar-cadastro', exigirLogin, async (req, res) => {
+
+    const { username } = req.body
+    const email = req.session.user.email
+
+    try{
+        const userExisting = await User.findOne({ where: { email } })
+
+        if(!userExisting){
+            console.log("o usuário de algum jeito não existe!!!!!!!!")
+            res.redirect('/perfil#conta')
+        }
+
+        // coloca o usuario no database
+        await User.update(
+            { username: username },
+            { where: { email: email } }
+        )
+
+        req.session.user.username = username
+
+        console.log("usuario atualizado")
+        res.redirect('/perfil#conta')
+    } catch(err) {
+        console.error(err)
+        res.redirect('/perfil#conta')
+    }
+})
+
 app.get('/login', exigirUsuarioDeslogado, (_, res) => {
     res.render('login')
 })

@@ -9,6 +9,12 @@
 
   --error: #f37989;
   --error-alt: #e95568;
+
+  --small: 12px;
+  --medium: 16px;
+  --large: 18px;
+  --extra-large: 22px;
+  --huge: 32px;
 }
 
 [tema="claro"] {
@@ -45,7 +51,7 @@ html, body {
 
   width: 100vw;
 
-  font-size: large;
+  font-size: var(--large);
 
   color: var(--text);
 
@@ -223,6 +229,8 @@ a:hover {
 h1, p {
   text-align: center;
   margin-bottom: 16px;
+
+  font-size: var(--huge)
 }
 
 form {
@@ -243,7 +251,7 @@ label:has(input[type="number"]) {
   
   align-items: center;
 
-  font-size: small;
+  font-size: var(--small);
 
   text-shadow:
     -2px 2px var(--background-alt),
@@ -267,7 +275,7 @@ label:has(input[type="number"]) {
 
   border-radius: 8px;
 
-  font-size: medium;
+  font-size: var(--medium);
   font-family: 'Outfit';
   color: var(--text);
 
@@ -287,7 +295,7 @@ label:has(input[type="checkbox"]) {
   
   align-items: center;
 
-  font-size: medium;
+  font-size: var(--medium);
 
   width: 100%;
 
@@ -343,7 +351,7 @@ input:checked + .pista::before {
 
 .button {
   font-family: 'Outfit';
-  font-size: medium;
+  font-size: var(--medium);
 
   color: var(--background-alt);
   background-color: var(--accent);
@@ -382,7 +390,7 @@ input:checked + .pista::before {
 
   border-radius: 16px;
 
-  font-size: large;
+  font-size: var(--large);
   font-family: 'Outfit';
   color: var(--text);
 }
@@ -394,7 +402,7 @@ input:checked + .pista::before {
   height: 100%;
   width: 100%;
 
-  font-size: medium;
+  font-size: var(--medium);
   font-family: 'Outfit';
   color: var(--text);
 }
@@ -405,22 +413,21 @@ input:checked + .pista::before {
   border: 2px solid var(--error-alt);
   border-radius: 8px;
 
-  font-size: medium;
+  font-size: var(--medium);
 }
 
 .botao-deslogar {
   position: absolute;
-  background-color: var(--error);
   padding: 4px 12px;
-  border: 2px solid var(--error-alt);
   border-radius: 8px;
 
-  font-size: medium;
+  color: var(--error);
+
+  font-size: var(--medium);
 }
 
 .botao-deslogar:hover {
-  background-color: var(--error-alt);
-  color: initial;
+  color: var(--error-alt)
 }
 
 details {
@@ -446,7 +453,7 @@ summary {
   border-radius: 8px;
   user-select: none;
 
-  font-size: small;
+  font-size: var(--small);
 }
 
 details[open] summary {
@@ -475,7 +482,7 @@ details[open] summary {
   margin-top: -23px;
 
   font-weight: normal;
-  font-size: small;
+  font-size: var(--small);
 
   text-shadow:
     -2px 2px var(--background-alt),

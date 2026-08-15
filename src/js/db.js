@@ -6,7 +6,7 @@
  * @author Gabriel Della Gaspera
  */
 
-const { Sequelize, DataTypes } = require('sequelize');
+const {Sequelize, DataTypes} = require('sequelize');
 const bcrypt = require('bcryptjs');
 
 // Inicializa o banco de dados SQLite
@@ -28,13 +28,13 @@ Dicas:
 // TODO: definição dos modelos do banco de dados
 const User = sequelize.define('User', {
     id: {
-      type: ID_DATA_TYPE,
-      unique: true,
-      primaryKey: true,
-      autoIncrement: true
+        type: ID_DATA_TYPE,
+        unique: true,
+        primaryKey: true,
+        autoIncrement: true
     },
     email: {
-        type : DataTypes.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
         unique: true
     },
@@ -96,32 +96,35 @@ const PerfilVendedor = sequelize.define('PerfilVendedor', {
         type: DataTypes.ARRAY(ID_DATA_TYPE)
     }
 });
-const Categoria = sequelize.define('Categoria', {
-
-});
+const Categoria = sequelize.define('Categoria', {});
 const Produto = sequelize.define('Produto', {
-
+    id: {
+        type: ID_DATA_TYPE,
+        primaryKey: true,
+        allowNull: false,
+        unique: true
+    },
+    nome: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    preco: {
+        type: DataTypes.FLOAT,
+        allowNull: false
+    },
+    imagem: {
+        type: DataTypes.STRING, // link
+        allowNull: false
+    },
 });
-const Carrinho = sequelize.define('Carrinho', {
-
-});
-const ItemCarrinho = sequelize.define('ItemCarrinho', {
-
-});
-const Pedido = sequelize.define('Pedido', {
-
-});
-const ItemPedido = sequelize.define('ItemPedido', {
-
-});
-const Avaliacao = sequelize.define('Avaliacao', {
-
-});
-const HistoricoEstadoPedido = sequelize.define('HistoricoEstadoPedido', {
-
-});
+const Carrinho = sequelize.define('Carrinho', {});
+const ItemCarrinho = sequelize.define('ItemCarrinho', {});
+const Pedido = sequelize.define('Pedido', {});
+const ItemPedido = sequelize.define('ItemPedido', {});
+const Avaliacao = sequelize.define('Avaliacao', {});
+const HistoricoEstadoPedido = sequelize.define('HistoricoEstadoPedido', {});
 
 // Sincroniza o banco
-sequelize.sync().then( );
+sequelize.sync().then();
 
-module.exports = { sequelize, User };
+module.exports = {sequelize, User};

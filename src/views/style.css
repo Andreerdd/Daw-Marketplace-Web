@@ -67,11 +67,9 @@ html, body {
   align-items: space-between;
 
   background-color: var(--background-alt);
-  padding: 16px;
   height: 64px;
 
-  padding-left: 5%;
-  padding-right: 5%;
+  padding: 16px 5%;
 
   font-size: smaller;
 }
@@ -86,11 +84,9 @@ html, body {
   align-items: center;
 
   background-color: var(--background-alt);
-  padding: 16px;
   height: 64px;
 
-  padding-left: 0;
-  padding-right: 10%;
+  padding: 16px 10% 16px 0;
 }
 
 .header-left {
@@ -121,11 +117,9 @@ html, body {
   align-items: center;
 
   background-color: var(--background-alt);
-  padding: 16px;
   height: 64px;
 
-  padding-left: 20%;
-  padding-right: 20%;
+  padding: 16px 20%;
 }
 
 .jueguitos-logo {
@@ -154,6 +148,7 @@ html, body {
   color: var(--background-alt);
   background-color: var(--accent-alt);
 }
+
 .categoria-header {
   position: relative;
   display: flex;
@@ -266,9 +261,7 @@ label:has(input[type="number"]) {
 
 .input {
   outline: none;
-  padding: 8px;
-  padding-left: 16px;
-  padding-right: 16px;
+  padding: 8px 16px;
   margin-top: -8px;
   background-color: var(--background-alt);
   border: 2px solid var(--background);
@@ -276,7 +269,7 @@ label:has(input[type="number"]) {
   border-radius: 8px;
 
   font-size: var(--medium);
-  font-family: 'Outfit';
+  font-family: 'Outfit', sans-serif;
   color: var(--text);
 
   width: 100%;
@@ -350,7 +343,7 @@ input:checked + .pista::before {
 }
 
 .button {
-  font-family: 'Outfit';
+  font-family: 'Outfit', sans-serif;
   font-size: var(--medium);
 
   color: var(--background-alt);
@@ -370,6 +363,13 @@ input:checked + .pista::before {
   background-color: var(--accent-alt);
 }
 
+.icon-button {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-self: center;
+}
+
 .searchbar {
   display: flex;
   flex-direction: row;
@@ -381,8 +381,7 @@ input:checked + .pista::before {
   width: 30vw;
   
   outline: none;
-  padding: 8px;
-  padding-right: 16px;
+  padding: 8px 16px 8px 8px;
   background-color: var(--background);
   border: 2px solid var(--background-alt);
 
@@ -391,7 +390,7 @@ input:checked + .pista::before {
   border-radius: 16px;
 
   font-size: var(--large);
-  font-family: 'Outfit';
+  font-family: 'Outfit', sans-serif;
   color: var(--text);
 }
 
@@ -403,7 +402,7 @@ input:checked + .pista::before {
   width: 100%;
 
   font-size: var(--medium);
-  font-family: 'Outfit';
+  font-family: 'Outfit', sans-serif;
   color: var(--text);
 }
 
@@ -465,9 +464,7 @@ details[open] summary {
 
 .perfil-section {
   outline: none;
-  padding: 8px;
-  padding-left: 16px;
-  padding-right: 16px;
+  padding: 8px 16px;
   margin-top: -16px;
   background: none;
   border: 2px solid var(--background);
@@ -513,6 +510,43 @@ details[open] summary {
   overflow-y: auto;
 }
 
+.perfil-section .div-lista-produtos {
+  width: 100%;
+  margin-top: 5%;
+  height: 90%;
+
+  /*Se achar melhor, coloca borda*/
+  /*border: 2px solid var(--background);*/
+  /*border-radius: 3px;*/
+}
+
+/*
+  Div que vai ter vários produtos como filhos.
+  Coloque aqui regras em comum para todos os containers que listam produtos,
+  como grid etc.
+*/
+.div-lista-produtos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: initial;
+}
+
+.produto { /* Elemento de um produto em uma listagem */
+  width: 90%;
+  border: 3px solid #e95568;
+  display: flex;
+  flex-direction: column;
+}
+
+.produto span {
+  width: 100%;
+  display: block;
+}
+
+.produto .nome {
+  font-size: var(--extra-large);
+}
 
 
 .material-symbols-outlined {

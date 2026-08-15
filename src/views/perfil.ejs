@@ -6,8 +6,11 @@
         <a href="#preferencias"><span class="material-symbols-outlined">manufacturing</span>Preferências</a>
         <a href="#vendedor"><span class="material-symbols-outlined">shopping_basket</span>Loja</a>
     </div>
-    <div class="container" style="min-width: 320px; width: 30vw; height: 60vh;">
-        <a class="botao-deslogar" href="/logout">sair</a>
+    <div class="container" style="min-width: 500px; width: 30vw; height: 60vh;">
+        <a class="botao-deslogar" href="/logout">
+            <span class="material-symbols-outlined">logout</span>
+            sair
+        </a>
         <h1><%= locals.user.username %></h1>
         
         <section class="perfil-section" id="conta">
@@ -29,14 +32,25 @@
             <h4>Preferências</h4>
             <label>
                 Tema Escuro
-                <input type="checkbox" id="tema-escuro">
+                <input type="checkbox" id="tema-escuro" checked>
                 <span class="pista"></span>
             </label>
         </section>
         
         <section class="perfil-section" id="vendedor">
             <h4>Loja</h4>
-            
+            <div class="div-lista-produtos">
+                <div class="produto">
+
+                    <span class="nome">Nome super legal</span>
+                    <span>Preço 67 67 67</span>
+                </div>
+            </div>
+
+            <button class="button icon-button">
+                <span class="material-symbols-outlined">add</span>
+                Novo Produto
+            </button>
         </section>
     </div>
 </div>
@@ -45,7 +59,7 @@
 const temaBotao = document.getElementById("tema-escuro");
 
 if (localStorage.getItem('tema')) {
-  temaBotao.checked = (localStorage.getItem('tema') === "escuro") ? true : false;
+  temaBotao.checked = (localStorage.getItem('tema') === "escuro");
 }
 temaBotao.addEventListener('change', (event) => {
     let tema = event.target.checked ? "escuro" : "claro";

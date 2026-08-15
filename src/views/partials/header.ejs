@@ -28,7 +28,10 @@
 
             <div>
                 <% if (locals.username) { %>
-                    <a id="usuario" href="/perfil#conta" class="a"><%= username %></a>
+                    <a id="usuario" href="/perfil#conta" class="a">
+                        <span class="material-symbols-outlined">person</span>
+                        <%= username %>
+                    </a>
                 <% } else { %>
                     <a id="usuario" href="/login" class="a">Acessar conta</a>
                 <% } %>

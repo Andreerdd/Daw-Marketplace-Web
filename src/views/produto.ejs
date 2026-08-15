@@ -6,18 +6,22 @@
         <img src="<%= produto.imagem %>" alt="Foto do produto">
 
         <div class="produto-resumo">
-            <div>
-                <span class="nome font-extra-huge"><%= produto.nome %></span>
-                <span class="font-medium">De </span>
-                <a class="display-inline">
-                    <span class="font-medium font-bold font-underline"><%= produto.dono.nome %></span>
-                </a>
+            <div class="flex-column">
+                <span class="nome font-extra-huge width100"><%= produto.nome %></span>
+
+                <span class="font-medium">
+                    De
+                    <a class="display-inline">
+                        <span class="font-medium font-bold font-underline clickable"><%= produto.dono.nome %></span>
+                    </a>
+                </span>
+
             </div>
             <div style="align-items: flex-start">
 
                 <!-- Coloquei isso no meme -->
                 <span class="font-large"
-                      style="text-decoration: line-through">R$<%= produto.preco.toFixed(2) * 2 %>
+                      style="text-decoration: line-through">R$<%= (produto.preco * 2.067).toFixed(2) %>
                 </span>
                 <br>
 

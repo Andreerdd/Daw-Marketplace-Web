@@ -63,7 +63,7 @@ app.get('/produto/:id', (req, res) => {
         // Mandando um produto exemplar apenas para teste
         produto: {
             id: produtoId || 1,
-            nome: "Pibbles sao legais acho que todos deveriam ter! janja pf de pibbles de graca",
+            nome: "Pibbles sao legais acho que todos deveriam ter! janja pf da pibbles de graca",
             preco: 3.67,
             imagem: "https://i.scdn.co/image/ab67616d00001e02a0d9fa7e0467ea67fd7de2bb",
             dono: {nome: "Davi Brito da Silva"}

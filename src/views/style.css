@@ -68,6 +68,11 @@
     align-items: center;
 }
 
+.flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
 .font-underline {
     text-decoration: underline;
 }
@@ -76,6 +81,9 @@
     display: inline;
 }
 
+.clickable {
+    color: var(--clickable-text);
+}
 
 * {
     margin: 0;
@@ -235,7 +243,7 @@ html, body {
 
 a {
     text-decoration: none;
-    color: var(--clickable-text);
+    color: var(--text);
     transition: 0.2s;
 
     gap: 8px;

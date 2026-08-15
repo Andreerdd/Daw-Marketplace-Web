@@ -28,6 +28,32 @@
   --error-alt: #e95568;
 }
 
+.font-small {
+  font-size: var(--small);
+}
+
+.font-medium {
+  font-size: var(--medium);
+}
+
+.font-large {
+  font-size: var(--large);
+}
+
+.font-extra-large {
+  font-size: var(--extra-large);
+}
+
+.font-huge {
+  font-size: var(--huge);
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 * {
   margin:0;
   padding:0;
@@ -352,22 +378,38 @@ input:checked + .pista::before {
   outline: none;
   
   border-radius: 8px;
-  padding: 8px;
+  padding: 8px 16px;
 
   cursor: pointer;
 
   transition: .2s ease-in-out;
+  
+  white-space: nowrap;
+  
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .button:hover {
   background-color: var(--accent-alt);
 }
 
+.icon-button span.material-symbols-outlined {
+  flex-shrink: 0;
+  font-size: 1.25rem !important;
+  width: 1.25rem;
+  text-align: center;
+}
+
 .icon-button {
   display: flex;
   flex-direction: row;
+  justify-content: center;
+  align-items: center;
   gap: 8px;
-  align-self: center;
+  overflow: hidden;
+  padding: 8px 16px;
 }
 
 .searchbar {
@@ -527,27 +569,51 @@ details[open] summary {
 */
 .div-lista-produtos {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+
   gap: 8px;
-  position: initial;
+
+  /* Para scrollar apenas para baixo */
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex-wrap: wrap;
 }
 
 .produto { /* Elemento de um produto em uma listagem */
-  width: 90%;
-  border: 3px solid #e95568;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
+
+  border-radius: 4px;
+  border: 3px solid var(--background);
+
+  min-width: 170px;
+  width: 49%;
+  max-width: 400px;
 }
 
 .produto span {
-  width: 100%;
+  width: 90%;
+  margin-left: 5%;
   display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.produto .nome {
-  font-size: var(--extra-large);
+.produto img {
+  width: 100%;
+  height: auto;
+  border-bottom: 4px solid var(--background); /* se achar q fica feio essa borda, pd tirar*/
 }
 
+.produto button {
+  margin: 6px auto;
+  width: 90%;
+  min-height: 40px;
+}
 
 .material-symbols-outlined {
   font-variation-settings:
@@ -559,8 +625,7 @@ details[open] summary {
 
 .material-symbols-outlined {
   position: relative;
-  top: 2px; 
-  font-size: inherit !important;
+  font-size: 1.25rem !important;
   display: inline-block;
   vertical-align: middle;
   user-select: none;
@@ -598,4 +663,8 @@ html::-webkit-scrollbar-thumb {
 
 html::-webkit-scrollbar-thumb:hover {
   background: var(--background);
+}
+.produto .nome {
+  margin-top: 8px;
+  font-weight: bold;
 }

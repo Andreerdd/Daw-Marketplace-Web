@@ -40,11 +40,19 @@
         <section class="perfil-section" id="vendedor">
             <h4>Loja</h4>
             <div class="div-lista-produtos">
+                <!-- Só pra testar, coloquei pra gerar uns produto exemplar aí -->
+                <% for (let i = 0; i < 3; i++) { %>
                 <div class="produto">
+                    <img src="https://i.scdn.co/image/ab67616d00001e02a0d9fa7e0467ea67fd7de2bb" alt="Foto do produto">
+                    <span class="nome font-large">Nome super legal e bem grande blz sabrina carpenter</span>
+                    <span class="font-medium">R$3,67</span>
 
-                    <span class="nome">Nome super legal</span>
-                    <span>Preço 67 67 67</span>
+                    <button class="button icon-button ver-produto-btn">
+                        <span class="material-symbols-outlined">shoppingmode</span>
+                        Ver Produto
+                    </button>
                 </div>
+                <% } %>
             </div>
 
             <button class="button icon-button">

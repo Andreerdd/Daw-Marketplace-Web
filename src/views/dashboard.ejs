@@ -4,7 +4,7 @@
     <% if(locals.isVendor) { %>
         <div class="container perfil-abas" style="width: fit-content; flex-direction: row; min-width: 640px; width: 70vw; gap: 64px;">
             <a href="#dados"><span class="material-symbols-outlined">store</span>Dados da Loja</a>
-            <a href="#preferencias"><span class="material-symbols-outlined">manufacturing</span>Preferências</a>
+            <a href="#produtos"><span class="material-symbols-outlined">manufacturing</span>Produtos</a>
             <a href="/dashboard"><span class="material-symbols-outlined">shopping_basket</span>Loja</a>
         </div>
         <div class="container" style="min-width: 640px; width: 70vw; height: 80vh;">
@@ -25,14 +25,30 @@
                     <button type="submit" class="button">Salvar</button>
                 </form>
             </section>
-            
-            <section class="perfil-section" id="preferencias">
-                <h4>Preferências</h4>
-                <label>
-                    Tema Escuro
-                    <input type="checkbox" id="tema-escuro">
-                    <span class="pista"></span>
-                </label>
+                <section class="perfil-section" id="produtos">
+                    <h4>Produtos</h4>
+                    <div class="div-lista-produtos">
+                        <% for(let i = 0; i < 10; i++) { %>
+                        <div class="produto">
+                            <img src="https://i.scdn.co/image/ab67616d00001e02a0d9fa7e0467ea67fd7de2bb" alt="Foto do produto">
+                            <span class="nome font-large">Nome super legal e bem grande blz sabrina carpenter</span>
+                            
+                            <div style="display: flex; flex-direction: row; gap: 16px; justify-content: space-between; align-items: center; margin-top: 16px;">
+                                <span class="font-medium">R$<%= 67 * i * i %>,67 </span>
+                                <button class="button icon-button ver-produto-btn">
+                                    <span class="material-symbols-outlined">shoppingmode</span>
+                                    Ver Produto
+                                </button>
+                            </div>
+                        </div>
+                        <% } %>
+                    </div>
+
+                    <button class="button icon-button">
+                        <span class="material-symbols-outlined">add</span>
+                        Novo Produto
+                    </button>
+                </section>
             </section>
         </div>
     <% } else { %>

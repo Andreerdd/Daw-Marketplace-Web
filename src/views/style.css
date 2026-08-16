@@ -523,17 +523,19 @@ input:checked + .pista::before {
     font-family: 'Outfit', sans-serif;
     font-size: var(--medium);
 
-  text-align: center;
-  align-content: center;
-  justify-content: center;
+    text-align: center;
+    align-content: center;
+    justify-content: center;
 
-  color: white;
-  background-color: var(--accent);
-  border: 2px solid var(--accent-alt);
-  outline: none;
-  
-  border-radius: 8px;
-  padding: 8px;
+    color: white;
+    background-color: var(--accent);
+    border: 2px solid var(--accent-alt);
+    outline: none;
+    
+    border-radius: 8px;
+    padding: 8px;
+    
+    gap: 16px;
 
     border-radius: 8px;
     padding: 8px 16px;
@@ -700,8 +702,7 @@ details[open] summary {
 
 .perfil-section .div-lista-produtos {
     width: 100%;
-    margin-top: 5%;
-    height: 90%;
+    margin-top: 10px;
 
     /*Se achar melhor, coloca borda*/
     /*border: 2px solid var(--background);*/
@@ -719,7 +720,9 @@ details[open] summary {
     justify-content: flex-start;
     align-items: flex-start;
 
-    gap: 8px;
+    padding: 0;
+    margin: 0;
+    gap: 16px;
 
     /* Para scrollar apenas para baixo */
     overflow-y: auto;
@@ -732,17 +735,18 @@ details[open] summary {
     flex-direction: column;
     justify-content: flex-start;
 
-    border-radius: 4px;
-    border: 3px solid var(--background);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid var(--background);
 
-    min-width: 170px;
-    width: 49%;
-    max-width: 400px;
+    width: calc(100%/3 - 1*16px/2 - 2.66px);
+
+    margin: 0;
+    padding: 16px;
 }
 
 .produto span {
-    width: 90%;
-    margin-left: 5%;
+    /* width: 100%; */
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -750,15 +754,17 @@ details[open] summary {
 }
 
 .produto img {
-    width: 100%;
+    width: calc(100% + 32px);
     height: auto;
-    border-bottom: 4px solid var(--background); /* se achar q fica feio essa borda, pd tirar*/
+    aspect-ratio: 1 1;
+    margin: -16px;
+    margin-bottom: 0px;
 }
 
 .produto button {
-    margin: 6px auto;
-    width: 90%;
-    min-height: 40px;
+    flex-grow: 1;
+    /* width: 100%; */
+    /* min-height: 40px; */
 }
 
 

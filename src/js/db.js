@@ -102,6 +102,7 @@ const PerfilVendedor = sequelize.define('PerfilVendedor', {
         allowNull: false
     }
 });
+
 const Categoria = sequelize.define('Categoria', {});
 
 const Produto = sequelize.define('Produto', {

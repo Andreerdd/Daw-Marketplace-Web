@@ -86,16 +86,23 @@ const Endereco = sequelize.define('Endereco', {
         type: DataTypes.STRING
     }
 });
+
 const PerfilVendedor = sequelize.define('PerfilVendedor', {
     idUser: {
         type: ID_DATA_TYPE,
         allowNull: false,
         unique: true
     },
-    produtos: {
-        type: DataTypes.ARRAY(ID_DATA_TYPE)
+    nomeLoja: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    logoLoja: {
+        type: DataTypes.STRING,
+        allowNull: false
     }
 });
+
 const Categoria = sequelize.define('Categoria', {
 
 });
@@ -124,4 +131,4 @@ const HistoricoEstadoPedido = sequelize.define('HistoricoEstadoPedido', {
 // Sincroniza o banco
 sequelize.sync().then( );
 
-module.exports = { sequelize, User };
+module.exports = { sequelize, User, PerfilVendedor };

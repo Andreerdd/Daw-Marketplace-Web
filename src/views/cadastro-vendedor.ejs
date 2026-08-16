@@ -1,0 +1,42 @@
+<%- include('partials/header') %>
+
+<div class="container" style="min-width: 480px; width: 50vw;">
+    <form method="post" action="/cadastro-vendedor" enctype="multipart/form-data">
+        <h1>Cadastrar loja</h1>
+        <label>
+            Nome da loja
+            <input name="nomeLoja" type="text" placeholder="" class="input" autocomplete="off" required>
+        </label>
+        <label>
+            Logo
+            <div class="input">
+                <input name="logoLoja" type="file" accept="image/png, image/jpeg" placeholder="" autocomplete="off" id="logo" required>
+                <img id="preview-logo">
+            </div>
+        </label>
+
+        <button type="submit" class="button">Cadastrar</button>
+    </form>
+    <% if(locals.mensagem) { %>
+        <span class="mensagem-erro"><%= mensagem %></span>
+    <% } %>
+</div>
+
+<script>
+const logoInput = document.getElementById("logo");
+const logoImg = document.getElementById("preview-logo");
+
+logoInput.addEventListener('change', (event) => {
+    const arquivo = event.target.files[0];
+    if(arquivo) {
+        const urlImagem = URL.createObjectURL(arquivo);
+        logoImg.src = urlImagem;
+        logoImg.style.display = "block";
+    } else {
+        logoImg.src = "";
+        // logoImg.style.display = "none";
+    }
+})
+</script>
+
+<%- include('partials/footer') %>

@@ -27,10 +27,10 @@
     "express": "^5.2.1",
     "express-session": "^1.19.0",
     "jquery": "^4.0.0",
+    "multer": "^2.2.0",
     "sequelize": "^6.37.8",
     "socket.io": "^4.8.3",
     "sqlite3": "^5.1.6"
   },
-  "keywords": [],
-  "devDependencies": {}
+  "keywords": []
 }

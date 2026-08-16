@@ -9,16 +9,18 @@ const express = require('express');
 const session = require('express-session');
 const http = require('http');
 const { Server } = require('socket.io');
-const { User } = require('./db');
+const { User, PerfilVendedor } = require('./db');
 const path = require('path');
 const bcrypt = require('bcryptjs');
+const multer = require('multer');
+const upload = multer({ dest: path.join(__dirname, '../views/uploads/') });
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
 //se algm mudar isso aqui é ban
-const TAMANHO_MINIMO_SENHA = 6// resenhaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+const TAMANHO_MINIMO_SENHA = 6
 
 // Configuração do EJS
 app.set('views', path.join(__dirname, '../views'));
@@ -49,8 +51,52 @@ app.get('/perfil', exigirLogin, (req, res) => {
     return res.render('perfil', { user : req.session?.user, username : req.session?.user?.username });
 });
 
+app.get('/dashboard', exigirLogin, async (req, res) => {
+    const idUser = req.session.user.id;
+    const perfilVendedor = await PerfilVendedor.findOne({ where: { idUser }});
+    
+    return res.render('dashboard', {
+        user: req.session.user,
+        username: req.session.user.username,
+        isVendor: (perfilVendedor) ? true : false,
+        produtos: perfilVendedor ? perfilVendedor.produtos : []
+    });
+});
+
 app.get('/login', exigirUsuarioDeslogado, (_, res) => {
     res.render('login')
+})
+
+app.post('/login', exigirUsuarioDeslogado, async (req, res) => {
+
+    const { email, password } = req.body
+
+    try{
+        
+        const user = await User.findOne({ where: { email } })
+        
+        if(!user) {
+            return res.render('login', {mensagem: 'Não encontramos esse usuário!'})
+        }
+
+        const correctPassword = await bcrypt.compare(password, user.password)
+
+        if(!correctPassword) {
+            return res.render('login', {mensagem : 'Senha incorreta!'})
+        }
+
+        req.session.user = { 
+            id: user.id,
+            username: user.username,
+            email: user.email
+        }
+        
+        res.redirect('/')
+    } catch(err) {
+        console.error(err)
+        res.render('login', {mensagem : 'erro ao fazer o login'})
+    }
+
 })
 
 app.get('/cadastro', exigirUsuarioDeslogado, (_, res) => {
@@ -134,46 +180,55 @@ app.post('/atualizar-cadastro', exigirLogin, async (req, res) => {
     }
 })
 
-app.get('/login', exigirUsuarioDeslogado, (_, res) => {
-    res.render('login')
-})
-
-app.post('/login', exigirUsuarioDeslogado, async (req, res) => {
-
-    const { email, password } = req.body
-
-    try{
-        
-        const user = await User.findOne({ where: { email } })
-        
-        if(!user) {
-            return res.render('login', {mensagem: 'Não encontramos esse usuário!'})
-        }
-
-        const correctPassword = await bcrypt.compare(password, user.password)
-
-        if(!correctPassword) {
-            return res.render('login', {mensagem : 'Senha incorreta!'})
-        }
-
-        req.session.user = { 
-            id: user.id,
-            username: user.username,
-            email: user.email
-        }
-        
-        res.redirect('/')
-    } catch(err) {
-        console.error(err)
-        res.render('login', {mensagem : 'erro ao fazer o login'})
-    }
-
-})
-
 app.get('/logout', exigirLogin, async (req, res) => {
   req.session.destroy();
   res.redirect('/');
 });
+
+app.get('/cadastro-vendedor', exigirLogin, (req, res) => {
+    res.render('cadastro-vendedor', { username : req.session.user.username })
+})
+
+app.post('/cadastro-vendedor', upload.single('logoLoja'), exigirLogin, async (req, res) => {
+
+    console.log(req.body)
+    // coleta os dados da pagina
+    const { nomeLoja } = req.body;
+    const logoLoja = req.file;
+    const idUser = req.session.user.id;
+
+    try{
+
+        // verifica se todos os campos foram preenchidos
+        if(!nomeLoja || !logoLoja) {
+            return res.render('cadastro-vendedor', {mensagem: 'Preencha todos os campos corretamente'})
+        }
+
+        const lojaJaExiste = await PerfilVendedor.findOne({ where: { idUser } })
+
+        // se achar, vai nos avisando
+        if(lojaJaExiste){
+            return res.redirect('/dashboard')
+        }
+
+        const caminhoLogo = req.file ? `/uploads/${req.file.filename}` : null;
+
+        var perfilVendedor = await PerfilVendedor.create({
+            idUser,
+            nomeLoja,
+            logoLoja: caminhoLogo
+        })
+
+        console.log("loja cadastrada")
+
+        res.redirect('/dashboard')
+    } catch(err) {
+        // se der erro printa no terminal e manda para a pagina
+        console.error(err)
+        res.render('cadastro-vendedor', { mensagem: 'erro interno no servidor' })
+    }
+
+})
 
 function exigirLogin(req, res, next) {
     if(req.session.user?.id) next();

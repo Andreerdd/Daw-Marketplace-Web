@@ -1,0 +1,48 @@
+<%- include('partials/header') %>
+
+<div style="display: flex; flex-direction: column; gap: 8px; align-self: center;">
+    <% if(locals.isVendor) { %>
+        <div class="container perfil-abas" style="width: fit-content; flex-direction: row; min-width: 640px; width: 70vw; gap: 64px;">
+            <a href="#dados"><span class="material-symbols-outlined">store</span>Dados da Loja</a>
+            <a href="#preferencias"><span class="material-symbols-outlined">manufacturing</span>Preferências</a>
+            <a href="/dashboard"><span class="material-symbols-outlined">shopping_basket</span>Loja</a>
+        </div>
+        <div class="container" style="min-width: 640px; width: 70vw; height: 80vh;">
+            <a class="botao-deslogar" href="/logout">sair</a>
+            <h1><%= locals.user.username %></h1>
+            
+            <section class="perfil-section" id="dados">
+                <h4>Conta</h4>
+                <form method="post" action="/atualizar-cadastro" class="vendedor-verificado">
+                    <label>
+                        E-mail
+                        <input type="text" value="<%= locals.user.email %>" class="input" disabled>
+                    </label>
+                    <label>
+                        Nome
+                        <input name="username" type="text" value="<%= locals.user.username %>" placeholder="" class="input" autocomplete="off" required>
+                    </label>
+                    <button type="submit" class="button">Salvar</button>
+                </form>
+            </section>
+            
+            <section class="perfil-section" id="preferencias">
+                <h4>Preferências</h4>
+                <label>
+                    Tema Escuro
+                    <input type="checkbox" id="tema-escuro">
+                    <span class="pista"></span>
+                </label>
+            </section>
+        </div>
+    <% } else { %>
+        <div class="container">
+            <h1>Perfil de vendedor não encontrado!</h1>
+            <span>Parece que você ainda não realizou o cadastro de vendedor ainda!</span>
+            <a href="cadastro-vendedor" class="button">Cadastre sua loja aqui!</a>
+        </div>
+    <% } %>
+</div>
+
+    
+<%- include('partials/footer') %>

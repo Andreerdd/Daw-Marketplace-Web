@@ -15,7 +15,10 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/js/app.js",
+    "server": "nodemon --watch src/js src/js/app.js",
+    "sync": "browser-sync start --proxy \"localhost:3000\" --port 3001 --files \"src/views/**/*.*\" --reload-delay 500",
+    "dev": "concurrently -k -n \"NODE,BROWSER\" -c \"cyan,magenta\" \"npm run server\" \"npm run sync\""
   },
   "dependencies": {
     "@sequelize/core": "^7.0.0-alpha.48",
@@ -30,7 +33,15 @@
     "multer": "^2.2.0",
     "sequelize": "^6.37.8",
     "socket.io": "^4.8.3",
-    "sqlite3": "^5.1.6"
+    "sqlite3": "^5.1.7"
   },
-  "keywords": []
+  "keywords": [],
+  "allowScripts": {
+    "sqlite3@5.1.7": true,
+    "bcrypt@6.0.0": true
+  },
+  "devDependencies": {
+    "browser-sync": "^3.0.4",
+    "nodemon": "^3.1.14"
+  }
 }

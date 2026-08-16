@@ -6,8 +6,11 @@
         <a href="#preferencias"><span class="material-symbols-outlined">manufacturing</span>Preferências</a>
         <a href="/dashboard"><span class="material-symbols-outlined">shopping_basket</span>Loja</a>
     </div>
-    <div class="container" style="min-width: 320px; width: 30vw; height: 60vh;">
-        <a class="botao-deslogar" href="/logout">sair</a>
+    <div class="container" style="min-width: 500px; width: 30vw; height: 60vh;">
+        <a class="botao-deslogar" href="/logout">
+            <span class="material-symbols-outlined">logout</span>
+            sair
+        </a>
         <h1><%= locals.user.username %></h1>
         
         <section class="perfil-section" id="conta">
@@ -29,10 +32,31 @@
             <h4>Preferências</h4>
             <label>
                 Tema Escuro
-                <input type="checkbox" id="tema-escuro">
+                <input type="checkbox" id="tema-escuro" checked>
                 <span class="pista"></span>
             </label>
         </section>
+        
+        <!-- <section class="perfil-section" id="vendedor">
+            <h4>Loja</h4>
+            <div class="div-lista-produtos">
+                <div class="produto">
+                    <img src="https://i.scdn.co/image/ab67616d00001e02a0d9fa7e0467ea67fd7de2bb" alt="Foto do produto">
+                    <span class="nome font-large">Nome super legal e bem grande blz sabrina carpenter</span>
+                    <span class="font-medium">R$3,67</span>
+
+                    <button class="button icon-button ver-produto-btn">
+                        <span class="material-symbols-outlined">shoppingmode</span> <! -- Não curti esse ícone, mas foi o menos pior q achei  -- >
+                        Ver Produto
+                    </button>
+                </div>
+            </div>
+
+            <button class="button icon-button">
+                <span class="material-symbols-outlined">add</span>
+                Novo Produto
+            </button>
+        </section> -->
     </div>
 </div>
 
@@ -40,7 +64,7 @@
 const temaBotao = document.getElementById("tema-escuro");
 
 if (localStorage.getItem('tema')) {
-  temaBotao.checked = (localStorage.getItem('tema') === "escuro") ? true : false;
+  temaBotao.checked = (localStorage.getItem('tema') === "escuro");
 }
 temaBotao.addEventListener('change', (event) => {
     let tema = event.target.checked ? "escuro" : "claro";

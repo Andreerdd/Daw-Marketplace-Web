@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
 
 <div class="container" style="min-width: 480px; width: 50vw;">
-<form method="post" action="/login">
+    <form method="post" action="/login">
         <h1>Acessar conta</h1>
         <label>
             E-mail
@@ -9,15 +9,17 @@
         </label>
         <label>
             Senha
-            <input name="password" type="password" placeholder="" class="input" autocomplete="off" required minlength="6">
+            <input name="password" type="password" placeholder="" class="input" autocomplete="off" required
+                   minlength="6">
         </label>
 
-        <a href="/cadastro" style="text-align: center; font-size: small;">Não tem uma conta? Crie agora!</a>
+        <a href="/cadastro" class="font-small font-underline" style="text-align: center;">Não tem uma conta? Crie
+            agora!</a>
 
         <button type="submit" class="button">Entrar</button>
     </form>
     <% if(locals.mensagem) { %>
-        <span class="mensagem-erro"><%= mensagem %></span>
+    <span class="mensagem-erro"><%= mensagem %></span>
     <% } %>
 </div>
 

@@ -1,0 +1,38 @@
+<!-- Página para ver um produto -->
+
+<%- include('partials/header') %>
+<div class="container" style="width: 90%;">
+    <div class="topo-pagina-produto">
+        <img src="<%= produto.imagem %>" alt="Foto do produto">
+
+        <div class="produto-resumo">
+            <div class="flex-column">
+                <span class="nome font-extra-huge width100"><%= produto.nome %></span>
+
+                <span class="font-medium">
+                    De
+                    <a class="display-inline">
+                        <span class="font-medium font-bold font-underline clickable"><%= produto.dono.nome %></span>
+                    </a>
+                </span>
+
+            </div>
+            <div style="align-items: flex-start">
+
+                <!-- Coloquei isso no meme -->
+                <span class="font-large"
+                      style="text-decoration: line-through">R$<%= (produto.preco * 2.067).toFixed(2) %>
+                </span>
+                <br>
+
+                <span class="font-huge font-bold">R$<%= produto.preco.toFixed(2) %></span>
+                <button class="button icon-button width100"
+                        onclick="window.location.href='/comprar/<%= produto.id %>'">
+                    <span class="material-symbols-outlined">shopping_cart</span>
+                    Comprar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('partials/footer') %>

@@ -4,6 +4,9 @@
 # package-lock
 /package-lock.json
 
+# banco de dados
+/database.sqlite
+
 # ide
 ./.idea
 ./.vscode

@@ -124,6 +124,10 @@ const Produto = sequelize.define('Produto', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    descricao: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     preco: {
         type: DataTypes.FLOAT,
         allowNull: false

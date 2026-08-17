@@ -281,7 +281,7 @@ app.post('/cadastro-vendedor', upload.single('logoLoja'), exigirLogin, async (re
 
 app.post('/novo-produto', upload.single('imagemProduto'), exigirVendedor, async (req, res) => {
     // coleta os dados da pagina
-    const {nome, preco} = req.body;
+    const {nome, descricao, preco, pecas, cartas} = req.body;
     const imagemProduto = req.file;
     const vendedorId = req.session.user.id; // o vendedor é o usuário que está atualmente logado
 
@@ -297,8 +297,11 @@ app.post('/novo-produto', upload.single('imagemProduto'), exigirVendedor, async 
         const produto = await Produto.create({
             vendedorId,
             nome,
+            descricao,
             preco,
-            imagem: caminhoImagem
+            imagem: caminhoImagem,
+            pecas,
+            cartas
         })
 
         // Adiciona o id do produto ao inventário do usuário

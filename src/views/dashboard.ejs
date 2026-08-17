@@ -33,10 +33,10 @@
                     <div style="display: flex; flex-direction: row; gap: 16px; justify-content: space-between; align-items: center; margin-top: 16px;">
                         <span class="font-medium">R$<%= produto.preco.toFixed(2) %></span>
                         <!-- se quiser trocar, pode troca -->
-                        <button class="button icon-button ver-produto-btn">
+                        <a class="button icon-button ver-produto-btn" href="/produto/<%= produto.id %>">
                             <span class="material-symbols-outlined">shoppingmode</span>
                             Ver Produto
-                        </button>
+                        </a>
                     </div>
                 </div>
                 <% } %>
@@ -70,6 +70,15 @@
     document.getElementById('novoProdutoBtn').addEventListener('click', () => {
         window.location.href = '/novo-produto';
     });
+
+    // Quando o botão de Ver Produto for clicado
+    document.querySelectorAll('.ver-produto-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            // Redireciona para a página do produto
+            window.location.href = '/produto/' + button.closest('.produto').dataset.id;
+        });
+    });
+
 </script>
 
 <%- include('partials/footer') %>

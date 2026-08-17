@@ -51,6 +51,16 @@ async function getProdutosFromIds(ids) {
 }
 
 /**
+ * Obtém o produto com o id dado, ou null se não houver.
+ * @param id o id do produto que se deseja obter
+ * @returns {Promise<Produto|null>} Uma promessa com o produto com o id dado
+ */
+async function getProdutoFromId(id) {
+    const produtos = await getProdutosFromIds([id]);
+    return produtos[0] || null;
+}
+
+/**
  * Obtém o perfil de vendedor do usuário dado.
  * @param idUser o id do usuário para o qual se deseja obter o perfil de vendedor
  * @returns {Promise<PerfilVendedor|null>}
@@ -67,5 +77,6 @@ module.exports = {
     exigirVendedor,
     existePerfilVendedor,
     getProdutosFromIds,
+    getProdutoFromId,
     getPerfilVendedor
 };

@@ -66,6 +66,10 @@ app.get('/', (req, res) => {
     return res.render('index', {username: req.session?.user?.username || null});
 });
 
+app.get('/', (req, res) => {
+    return res.render('index', {username: req.session?.user?.username || null});
+});
+
 app.get('/perfil', exigirLogin, (req, res) => {
     return res.render('perfil', {user: req.session?.user, username: req.session?.user?.username});
 });

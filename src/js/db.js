@@ -132,6 +132,12 @@ const Produto = sequelize.define('Produto', {
         type: DataTypes.STRING, // link
         allowNull: false
     },
+    pecas: {
+        type: DataTypes.INTEGER
+    },
+    cartas: {
+        type: DataTypes.INTEGER
+    }
 });
 const Carrinho = sequelize.define('Carrinho', {});
 const ItemCarrinho = sequelize.define('ItemCarrinho', {});

@@ -523,6 +523,8 @@ input:checked + .pista::before {
     font-family: 'Outfit', sans-serif;
     font-size: var(--medium);
 
+    flex-grow: 1;
+
     text-align: center;
     align-content: center;
     justify-content: center;

@@ -8,7 +8,9 @@ const {
     exigirUsuarioDeslogado,
     exigirVendedor,
     existePerfilVendedor,
-    getProdutosFromIds, getPerfilVendedor
+    getProdutosFromIds,
+    getProdutoFromId,
+    getPerfilVendedor
 } = require('./utils');
 const {
     sequelize,
@@ -135,24 +137,18 @@ app.get('/novo-produto', exigirVendedor, (_, res) => {
     res.render('cadastro-produto')
 })
 
-app.get('/produto/:id', (req, res) => {
+app.get('/produto/:id', async (req, res) => {
     const produtoId = req.params.id;
+    const produto = await getProdutoFromId(produtoId);
     res.render('produto', {
-        // Mandando um produto exemplar apenas para teste
-        produto: {
-            id: produtoId || 1,
-            nome: "Pibbles sao legais acho que todos deveriam ter! janja pf da pibbles de graca",
-            preco: 3.67,
-            imagem: "https://i.scdn.co/image/ab67616d00001e02a0d9fa7e0467ea67fd7de2bb",
-            dono: {nome: "Davi Brito da Silva"}
-        },
+        produto, // Manda o produto
         username: req.session?.user?.username || null // é possível q um deslogado veja um produto
     })
 })
 
 app.get('/comprar/:id', exigirLogin, (req, res) => {
     const produtoId = req.params.id;
-
+    console.log("Produto comprado!");
 })
 
 app.post('/cadastro', exigirUsuarioDeslogado, async (req, res) => {
@@ -180,7 +176,7 @@ app.post('/cadastro', exigirUsuarioDeslogado, async (req, res) => {
         }
 
         // coloca o usuario no database
-        var user = await User.create({
+        const user = await User.create({
             username,
             email,
             password // nao precisa de hash aqui, pois ja esta sendo feito no db.js
@@ -214,6 +210,7 @@ app.post('/atualizar-cadastro', exigirLogin, async (req, res) => {
         if (!userExisting) {
             console.log("o usuário de algum jeito não existe!!!!!!!!")
             res.redirect('/perfil#conta')
+            return;
         }
 
         // coloca o usuario no database

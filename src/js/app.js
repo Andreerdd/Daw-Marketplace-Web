@@ -136,8 +136,10 @@ app.get('/novo-produto', exigirVendedor, (_, res) => {
 app.get('/produto/:id', async (req, res) => {
     const produtoId = req.params.id;
     const produto = await getProdutoFromId(produtoId);
+    const loja = await getPerfilVendedor(produto.vendedorId);
     res.render('produto', {
         produto, // Manda o produto
+        loja,
         username: req.session?.user?.username || null // é possível q um deslogado veja um produto
     })
 })

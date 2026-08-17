@@ -4,8 +4,9 @@
 # package-lock
 /package-lock.json
 
-# banco de dados
+# banco de dados etc
 /database.sqlite
+/src/views/uploads
 
 # ide
 ./.idea

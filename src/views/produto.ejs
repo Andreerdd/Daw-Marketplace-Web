@@ -17,6 +17,8 @@
                     </a>
                 </span>
 
+                <hr>
+
             </div>
             <div style="align-items: flex-start">
 
@@ -27,11 +29,11 @@
                 <br>
 
                 <span class="font-huge font-bold">R$<%= produto.preco.toFixed(2) %></span>
-                <button class="button icon-button width100"
+                <a class="button icon-button width100" href="/comprar/<%= produto.id %>"
                         onclick="window.location.href='/comprar/<%= produto.id %>'">
                     <span class="material-symbols-outlined">shopping_cart</span>
                     Comprar
-                </button>
+                </a>
             </div>
         </div>
     </div>

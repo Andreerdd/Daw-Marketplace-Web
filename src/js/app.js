@@ -1,26 +1,45 @@
 /**
  * Código principal do projeto.
- *
- * @author André Dias
- * @author Gabriel Della Gaspera
  */
+
+// Imports
+const {
+    exigirLogin,
+    exigirUsuarioDeslogado,
+    exigirVendedor,
+    existePerfilVendedor,
+    getProdutosFromIds, getPerfilVendedor
+} = require('./utils');
+const {
+    sequelize,
+    User,
+    PerfilVendedor,
+    Categoria,
+    Produto,
+    Carrinho,
+    ItemCarrinho,
+    Pedido,
+    ItemPedido,
+    Avaliacao,
+    HistoricoEstadoPedido
+} = require('./db');
+
 
 const express = require('express');
 const session = require('express-session');
 const http = require('http');
-const { Server } = require('socket.io');
-const { User, PerfilVendedor } = require('./db');
+const {Server} = require('socket.io');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
-const upload = multer({ dest: path.join(__dirname, '../views/uploads/') });
+const upload = multer({dest: path.join(__dirname, '../views/uploads/')});
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
 //se algm mudar isso aqui é ban
-const TAMANHO_MINIMO_SENHA = 6
+const TAMANHO_MINIMO_SENHA = 6 // 67
 
 // Configuração do EJS
 app.set('views', path.join(__dirname, '../views'));
@@ -53,13 +72,18 @@ app.get('/perfil', exigirLogin, (req, res) => {
 
 app.get('/dashboard', exigirLogin, async (req, res) => {
     const idUser = req.session.user.id;
-    const perfilVendedor = await PerfilVendedor.findOne({ where: { idUser }});
-    
+    const perfilVendedor = await getPerfilVendedor(idUser);
+
+    const produtos = await getProdutosFromIds(perfilVendedor?.idProdutos || []);
+    console.log("============================")
+    console.log("Produtos: ")
+    console.log(produtos)
+    console.log("============================")
     return res.render('dashboard', {
         user: req.session.user,
         username: req.session.user.username,
-        isVendor: (perfilVendedor) ? true : false,
-        produtos: perfilVendedor ? perfilVendedor.produtos : []
+        isVendor: !!(perfilVendedor), // os dois `!` é para ter certeza q é booleano
+        produtos: produtos // obtém os produtos do usuário local
     });
 });
 
@@ -69,38 +93,42 @@ app.get('/login', exigirUsuarioDeslogado, (_, res) => {
 
 app.post('/login', exigirUsuarioDeslogado, async (req, res) => {
 
-    const { email, password } = req.body
+    const {email, password} = req.body
 
-    try{
-        
-        const user = await User.findOne({ where: { email } })
-        
-        if(!user) {
+    try {
+
+        const user = await User.findOne({where: {email}})
+
+        if (!user) {
             return res.render('login', {mensagem: 'Não encontramos esse usuário!'})
         }
 
         const correctPassword = await bcrypt.compare(password, user.password)
 
-        if(!correctPassword) {
-            return res.render('login', {mensagem : 'Senha incorreta!'})
+        if (!correctPassword) {
+            return res.render('login', {mensagem: 'Senha incorreta!'})
         }
 
-        req.session.user = { 
+        req.session.user = {
             id: user.id,
             username: user.username,
             email: user.email
         }
-        
+
         res.redirect('/')
-    } catch(err) {
+    } catch (err) {
         console.error(err)
-        res.render('login', {mensagem : 'erro ao fazer o login'})
+        res.render('login', {mensagem: 'erro ao fazer o login'})
     }
 
 })
 
 app.get('/cadastro', exigirUsuarioDeslogado, (_, res) => {
     res.render('cadastro')
+})
+
+app.get('/novo-produto', exigirVendedor, (_, res) => {
+    res.render('cadastro-produto')
 })
 
 app.get('/produto/:id', (req, res) => {
@@ -118,7 +146,7 @@ app.get('/produto/:id', (req, res) => {
     })
 })
 
-app.get('/comprar/:id', exigirUsuarioDeslogado, (req, res) => {
+app.get('/comprar/:id', exigirLogin, (req, res) => {
     const produtoId = req.params.id;
 
 })
@@ -206,59 +234,89 @@ app.get('/logout', exigirLogin, async (req, res) => {
 });
 
 app.get('/cadastro-vendedor', exigirLogin, (req, res) => {
-    res.render('cadastro-vendedor', { username : req.session.user.username })
+    res.render('cadastro-vendedor', {username: req.session.user.username})
 })
 
 app.post('/cadastro-vendedor', upload.single('logoLoja'), exigirLogin, async (req, res) => {
 
     console.log(req.body)
     // coleta os dados da pagina
-    const { nomeLoja } = req.body;
+    const {nomeLoja} = req.body;
     const logoLoja = req.file;
     const idUser = req.session.user.id;
 
-    try{
+    try {
 
         // verifica se todos os campos foram preenchidos
-        if(!nomeLoja || !logoLoja) {
+        if (!nomeLoja || !logoLoja) {
             return res.render('cadastro-vendedor', {mensagem: 'Preencha todos os campos corretamente'})
         }
 
-        const lojaJaExiste = await PerfilVendedor.findOne({ where: { idUser } })
-
         // se achar, vai nos avisando
-        if(lojaJaExiste){
+        if (await existePerfilVendedor(idUser)) {
             return res.redirect('/dashboard')
         }
 
         const caminhoLogo = req.file ? `/uploads/${req.file.filename}` : null;
 
-        var perfilVendedor = await PerfilVendedor.create({
+        const perfilVendedor = await PerfilVendedor.create({
             idUser,
             nomeLoja,
             logoLoja: caminhoLogo
         })
 
-        console.log("loja cadastrada")
+        console.log("loja cadastrada s2")
 
         res.redirect('/dashboard')
-    } catch(err) {
+    } catch (err) {
         // se der erro printa no terminal e manda para a pagina
         console.error(err)
-        res.render('cadastro-vendedor', { mensagem: 'erro interno no servidor' })
+        res.render('cadastro-vendedor', {mensagem: 'erro interno no servidor'})
     }
 
 })
 
-function exigirLogin(req, res, next) {
-    if (req.session.user?.id) next();
-    else res.redirect('/login');
-}
+app.post('/novo-produto', upload.single('imagemProduto'), exigirVendedor, async (req, res) => {
+    // coleta os dados da pagina
+    const {nome, preco} = req.body;
+    const imagemProduto = req.file;
+    const vendedorId = req.session.user.id; // o vendedor é o usuário que está atualmente logado
 
-function exigirUsuarioDeslogado(req, res, next) {
-    if (!req.session.user?.id) next();
-    else res.redirect('/');
-}
+    try {
+
+        // verifica se todos os campos foram preenchidos
+        if (!nome || !preco || !imagemProduto) {
+            return res.render('cadastro-produto', {mensagem: 'Preencha todos os campos corretamente'})
+        }
+
+        const caminhoImagem = req.file ? `/uploads/${req.file.filename}` : null;
+
+        const produto = await Produto.create({
+            vendedorId,
+            nome,
+            preco,
+            imagem: caminhoImagem
+        })
+
+        // Adiciona o id do produto ao inventário do usuário
+        const perfilVendedor = await PerfilVendedor.findOne({where: {idUser: vendedorId}});
+        if (perfilVendedor) {
+            const produtosAtuais = Array.isArray(perfilVendedor.idProdutos) ? [...perfilVendedor.idProdutos] : [];
+            produtosAtuais.push(produto.id);
+            perfilVendedor.idProdutos = produtosAtuais;
+            perfilVendedor.changed('idProdutos', true);
+            await perfilVendedor.save();
+        }
+
+        res.redirect('/dashboard')
+    } catch (err) {
+        // se der erro printa no terminal e manda para a pagina
+        console.error(err)
+        res.render('cadastro-produto', {mensagem: 'erro interno no servidor'})
+    }
+
+})
+
 
 server.listen(3000, () => {
     console.log('Servidor rodando na porta 3000');

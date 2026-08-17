@@ -1,9 +1,6 @@
 /**
  * Código que guarda os modelos e outras coisas relacionadas ao
  * banco de dados do projeto.
- *
- * @author André Dias
- * @author Gabriel Della Gaspera
  */
 
 const {Sequelize, DataTypes} = require('sequelize');
@@ -100,6 +97,13 @@ const PerfilVendedor = sequelize.define('PerfilVendedor', {
     logoLoja: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    idProdutos: {
+        // NOTA: aqui, são guardados os IDS pra evitar q não fique sincronizado!
+
+        // NOTA 2: não dá pra usar DataTypes.ARRAY no Sqlite! Por isso, troquei para JSON
+        type: DataTypes.JSON, // array de ids
+        defaultValue: [] // o valor padrão é vazio
     }
 });
 
@@ -108,9 +112,13 @@ const Categoria = sequelize.define('Categoria', {});
 const Produto = sequelize.define('Produto', {
     id: {
         type: ID_DATA_TYPE,
+        unique: true,
         primaryKey: true,
-        allowNull: false,
-        unique: true
+        autoIncrement: true
+    },
+    vendedorId: {
+        type: ID_DATA_TYPE,
+        allowNull: false
     },
     nome: {
         type: DataTypes.STRING,
@@ -135,4 +143,16 @@ const HistoricoEstadoPedido = sequelize.define('HistoricoEstadoPedido', {});
 // Sincroniza o banco
 sequelize.sync().then();
 
-module.exports = { sequelize, User, PerfilVendedor };
+module.exports = {
+    sequelize,
+    User,
+    PerfilVendedor,
+    Categoria,
+    Produto,
+    Carrinho,
+    ItemCarrinho,
+    Pedido,
+    ItemPedido,
+    Avaliacao,
+    HistoricoEstadoPedido
+};

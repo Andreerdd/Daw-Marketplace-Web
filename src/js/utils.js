@@ -1,0 +1,71 @@
+/**
+ * Código com algumas funções (úteis) que são usadas
+ * ao longo do projeto inteiro.
+ */
+
+// Imports
+const {PerfilVendedor, Produto} = require('./db');
+
+function exigirLogin(req, res, next) {
+    if (req.session?.user?.id) next();
+    else res.redirect('/login');
+}
+
+function exigirUsuarioDeslogado(req, res, next) {
+    if (!req.session?.user?.id) next();
+    else res.redirect('/');
+}
+
+/**
+ * Verifica se o usuário local tem um perfil de vendedor.S
+ */
+async function exigirVendedor(req, res, next) {
+    let idLocal = req.session?.user?.id;
+    if (idLocal && await existePerfilVendedor(idLocal)) next();
+    else res.redirect('/cadastro-vendedor');
+}
+
+/**
+ * Retorna se existe um perfil de vendedor com o id dado.
+ * @param id o id que se deseja obter a existência do perfil de vendedor
+ * @returns {Promise<boolean>} promessa com um booleano que é verdadeiro caso exista um perfil.
+ */
+async function existePerfilVendedor(id) {
+    const lojaJaExiste = await getPerfilVendedor(id);
+    return !!lojaJaExiste; // not (not (...)) retorna um booleano ao invés do objeto!
+}
+
+/**
+ * Obtém os produtos de acordo com os ids passados.
+ * @param {Array<Number>} ids ids dos produtos que se deseja obter
+ * @returns {Promise<Array<Produto>>}
+ */
+async function getProdutosFromIds(ids) {
+    console.log("os ids sao: ")
+    console.log(ids)
+    return await Produto.findAll({
+        where: {
+            id: ids
+        }
+    });
+}
+
+/**
+ * Obtém o perfil de vendedor do usuário dado.
+ * @param idUser o id do usuário para o qual se deseja obter o perfil de vendedor
+ * @returns {Promise<PerfilVendedor|null>}
+ */
+async function getPerfilVendedor(idUser) {
+    return await PerfilVendedor.findOne({where: {idUser}});
+}
+
+
+// Exporta as funções
+module.exports = {
+    exigirLogin,
+    exigirUsuarioDeslogado,
+    exigirVendedor,
+    existePerfilVendedor,
+    getProdutosFromIds,
+    getPerfilVendedor
+};

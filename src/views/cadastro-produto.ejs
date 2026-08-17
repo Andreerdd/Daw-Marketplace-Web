@@ -1,0 +1,48 @@
+<%- include('partials/header') %>
+
+<div class="container" style="min-width: 480px; width: 50vw;">
+    <form method="post" action="/novo-produto" enctype="multipart/form-data">
+        <h1>Novo Produto 🤑🤑🤑</h1>
+        <label>
+            Nome
+            <input name="nome" type="text" placeholder="" class="input" autocomplete="off" required>
+        </label>
+        <label>
+            Preço
+            <input name="preco" type="number" min="0.01" step="0.01" placeholder="6.70" class="input" autocomplete="off"
+                   required>
+        </label>
+        <label>
+            Imagem do produto
+            <div class="input">
+                <input name="imagemProduto" type="file" accept="image/png, image/jpeg" placeholder="" autocomplete="off"
+                       id="imagemProduto" required>
+                <img id="preview-imagem" alt="Preview da imagem anexada">
+            </div>
+        </label>
+
+        <button type="submit" class="button">Criar Produto</button>
+    </form>
+    <% if(locals.mensagem) { %>
+    <span class="mensagem-erro"><%= mensagem %></span>
+    <% } %>
+</div>
+
+<script>
+    const imagemInput = document.getElementById("imagemProduto");
+    const imagemImg = document.getElementById("preview-imagem");
+
+    // Sempre que o usuário trocar a imagem, atualiza a imagem de preview
+    imagemInput.addEventListener('change', (event) => {
+        const arquivo = event.target.files[0];
+        if (arquivo) {
+            imagemImg.src = URL.createObjectURL(arquivo);
+            imagemImg.style.display = "block";
+        } else {
+            imagemImg.src = "";
+            // imagemImg.style.display = "none";
+        }
+    })
+</script>
+
+<%- include('partials/footer') %>

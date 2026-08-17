@@ -1,67 +1,75 @@
 <%- include('partials/header') %>
 
-<div style="display: flex; flex-direction: column; gap: 8px; align-self: center;">
+<div class="flex-column" style="gap: 8px; align-self: center;">
     <% if(locals.isVendor) { %>
-        <div class="container perfil-abas" style="width: fit-content; flex-direction: row; min-width: 640px; width: 70vw; gap: 64px;">
-            <a href="#dados"><span class="material-symbols-outlined">store</span>Dados da Loja</a>
-            <a href="#produtos"><span class="material-symbols-outlined">package_2</span>Produtos</a>
-            <a href="#precos"><span class="material-symbols-outlined">shoppingmode</span>Preços</a>
-        </div>
-        <div class="container" style="min-width: 640px; width: 70vw; height: 80vh;">
-            <a class="botao-deslogar" href="/logout">sair</a>
-            <h1><%= locals.user.username %></h1>
-            
-            <section class="perfil-section" id="dados">
-                <h4>Perfil da Loja</h4>
-                <span>
+    <div class="container perfil-abas"
+         style="width: fit-content; flex-direction: row; min-width: 640px; width: 70vw; gap: 64px;">
+        <a href="#dados"><span class="material-symbols-outlined">store</span>Dados da Loja</a>
+        <a href="#produtos"><span class="material-symbols-outlined">package_2</span>Produtos</a>
+        <a href="#precos"><span class="material-symbols-outlined">shoppingmode</span>Preços</a>
+    </div>
+    <div class="container" style="min-width: 640px; width: 70vw; height: 80vh;">
+        <a class="botao-deslogar" href="/logout">sair</a>
+        <h1><%= locals.user.username %></h1>
+
+        <section class="perfil-section" id="dados">
+            <h4>Perfil da Loja</h4>
+            <span>
                     Aqui vão estar as opções de:
                     <ul>
                         <li>Editar nome da loja</li>
                         <li>Editar logo da loja</li>
                     </ul>
                 </span>
-            </section>
-                <section class="perfil-section" id="produtos">
-                    <h4>Produtos</h4>
-                    <div class="div-lista-produtos">
-                        <% for(let i = 0; i < 10; i++) { %>
-                        <div class="produto">
-                            <img src="https://i.scdn.co/image/ab67616d00001e02a0d9fa7e0467ea67fd7de2bb" alt="Foto do produto">
-                            <span class="nome font-large">Nome super legal e bem grande blz sabrina carpenter</span>
-                            
-                            <div style="display: flex; flex-direction: row; gap: 16px; justify-content: space-between; align-items: center; margin-top: 16px;">
-                                <span class="font-medium">R$<%= 67 * i * i %>,67 </span>
-                                <button class="button icon-button ver-produto-btn">
-                                    <span class="material-symbols-outlined">shoppingmode</span>
-                                    Ver Produto
-                                </button>
-                            </div>
-                        </div>
-                        <% } %>
-                    </div>
+        </section>
+        <section class="perfil-section" id="produtos">
+            <h4>Produtos</h4>
+            <div class="div-lista-produtos">
+                <% for(const produto of produtos) { %>
+                <div class="produto">
+                    <img src="<%= produto.imagem %>" alt="Foto do produto">
+                    <span class="nome font-large"><%= produto.nome %></span>
 
-                    <button class="button icon-button">
-                        <span class="material-symbols-outlined">add</span>
-                        Novo Produto
-                    </button>
-                </section>
-            </section>
-            
-            <section class="perfil-section" id="precos">
-                <h4>Preços</h4>
-                <span>
+                    <div style="display: flex; flex-direction: row; gap: 16px; justify-content: space-between; align-items: center; margin-top: 16px;">
+                        <span class="font-medium">R$<%= produto.preco.toFixed(2) %></span>
+                        <!-- se quiser trocar, pode troca -->
+                        <button class="button icon-button ver-produto-btn">
+                            <span class="material-symbols-outlined">shoppingmode</span>
+                            Ver Produto
+                        </button>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+
+            <button class="button icon-button" id="novoProdutoBtn">
+                <span class="material-symbols-outlined">add</span>
+                Novo Produto
+            </button>
+        </section>
+
+        <section class="perfil-section" id="precos">
+            <h4>Preços</h4>
+            <span>
                     Aqui vai estar uma lista com todos os produtos e permitir que os valores sejam editados facilmente
                 </span>
-            </section>
-        </div>
+        </section>
+    </div>
     <% } else { %>
-        <div class="container">
-            <h1>Perfil de vendedor não encontrado!</h1>
-            <span>Parece que você ainda não realizou o cadastro de vendedor ainda!</span>
-            <a href="cadastro-vendedor" class="button">Cadastre sua loja aqui!</a>
-        </div>
+    <div class="container">
+        <h1>Perfil de vendedor não encontrado!</h1>
+        <span>Parece que você ainda não realizou o cadastro de vendedor ainda!</span>
+        <a href="cadastro-vendedor" class="button">Cadastre sua loja aqui!</a>
+    </div>
     <% } %>
 </div>
 
-    
+<script>
+    // Quando o botão de novo produto for clicado, redireciona
+    // para o site de cadastro
+    document.getElementById('novoProdutoBtn').addEventListener('click', () => {
+        window.location.href = '/novo-produto';
+    });
+</script>
+
 <%- include('partials/footer') %>

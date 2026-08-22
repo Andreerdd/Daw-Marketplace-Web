@@ -4,7 +4,8 @@
  */
 
 // Imports
-const {PerfilVendedor, Produto} = require('./db');
+const {PerfilVendedor, Produto, Avaliacao, User} = require('./db');
+const {Op} = require('sequelize');
 
 function exigirLogin(req, res, next) {
     if (req.session?.user?.id) next();
@@ -69,6 +70,39 @@ async function getPerfilVendedor(idUser) {
     return await PerfilVendedor.findOne({where: {idUser}});
 }
 
+/**
+ * Obtém todas as avaliações de um produto pelo id, incluindo os dados do usuário.
+ * @param produtoId o id do produto
+ * @returns {Promise<Array<Avaliacao>>}
+ */
+async function getAvaliacoesFromProduto(produtoId) {
+    return await Avaliacao.findAll({
+        where: { produtoId },
+        include: [{
+            model: User,
+            as: 'user',
+            attributes: ['id', 'username']
+        }],
+        order: [['createdAt', 'DESC']]
+    });
+}
+
+/**
+ * Obtém todos os produtos de uma determinada categoria.
+ * @param {string} categoria
+ * @returns {Promise<Array<Produto>>}
+ */
+async function getProdutosByCategoria(categoria) {
+    if (!categoria) return [];
+    return await Produto.findAll({
+        where: {
+            categoria: {
+                [Op.like]: `%${categoria}%`
+            }
+        }
+    });
+}
+
 
 // Exporta as funções
 module.exports = {
@@ -78,5 +112,7 @@ module.exports = {
     existePerfilVendedor,
     getProdutosFromIds,
     getProdutoFromId,
-    getPerfilVendedor
+    getPerfilVendedor,
+    getAvaliacoesFromProduto,
+    getProdutosByCategoria
 };

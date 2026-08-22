@@ -1,7 +1,11 @@
 <%- include('partials/header') %>
 
 <div class="container" style="min-width: 640px; width: 75vw; min-height: 60vh;">
-    <h1>Destaques da Loja</h1>
+    <div style="display: flex; flex-direction: column; justify-content: flex-start; align-items: center;">
+        <h1>Categoria: <%= nomeCategoria %></h1>
+        <a href="/" class="button" style="text-decoration: none;">Ver Todos os Produtos</a>
+    </div>
+
     <% if (locals.produtos && produtos.length > 0) { %>
         <div class="div-lista-produtos">
             <% for (const produto of produtos) { %>
@@ -24,11 +28,11 @@
         </div>
     <% } else { %>
         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px; gap: 16px;">
-            <span class="material-symbols-outlined" style="font-size: 64px; color: var(--text);">inventory_2</span>
-            <span class="font-large">Nenhum produto cadastrado no momento.</span>
+            <span class="material-symbols-outlined" style="font-size: 64px; color: var(--text);">search_off</span>
+            <span class="font-large">Nenhum produto encontrado nesta categoria.</span>
+            <a href="/" class="button">Voltar para o início</a>
         </div>
     <% } %>
 </div>
 
 <%- include('partials/footer') %>
-

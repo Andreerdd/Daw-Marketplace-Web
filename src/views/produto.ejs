@@ -2,6 +2,9 @@
 
 <%- include('partials/header') %>
 <div class="container" style="width: 90%;">
+    <% if(locals.mensagem) { %>
+    <span class="mensagem-sucesso"><%= mensagem %></span>
+    <% } %>
     <div class="topo-pagina-produto">
         <img src="<%= produto.imagem %>" alt="Foto do produto">
 
@@ -15,6 +18,9 @@
                     <a class="display-inline">
                         <span class="font-medium font-bold font-underline clickable"><%= loja.nomeLoja %></span>
                     </a>
+                    <% if (produto.categoria) { %>
+                        • Categoria: <a href="/categoria/<%= encodeURIComponent(produto.categoria) %>" class="display-inline"><span class="font-medium font-bold font-underline clickable"><%= produto.categoria %></span></a>
+                    <% } %>
                 </span>
                 
                 
@@ -45,6 +51,89 @@
                     Comprar
                 </button>
             </div>
+        </div>
+    </div>
+
+    <hr class="divisor-produto">
+
+    <!-- Comentários e avaliações -->
+    <div class="secao-avaliacoes">
+        <span class="font-huge font-bold">Avaliações e Comentários</span>
+
+        <!-- Formulário pra avaliar -->
+        <% if (locals.username) { %>
+            <% if (locals.usuarioJaAvaliou) { %>
+                <div class="aviso-ja-avaliou font-medium">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <span>Você já avaliou este produto.</span>
+                </div>
+            <% } else { %>
+                <form class="form-avaliacao flex-column" method="POST" action="/produto/<%= produto.id %>/avaliacao">
+                    <span class="font-large font-bold">Avaliar este produto</span>
+                    <div class="campo-nota">
+                        <label for="nota" class="font-medium">Nota (1 a 5):</label>
+                        <select name="nota" id="nota" required class="input-nota">
+                            <option value="5">5 ★★★★★ (Excelente)</option>
+                            <option value="4">4 ★★★★☆ (Muito Bom)</option>
+                            <option value="3">3 ★★★☆☆ (Bom)</option>
+                            <option value="2">2 ★★☆☆☆ (Regular)</option>
+                            <option value="1">1 ★☆☆☆☆ (Ruim)</option>
+                        </select>
+                    </div>
+                    <div class="campo-mensagem flex-column">
+                        <label for="mensagem" class="font-medium">Mensagem:</label>
+                        <textarea name="mensagem" id="mensagem" rows="3" placeholder="Deixe seu comentário sobre o produto..." required class="input-comentario"></textarea>
+                    </div>
+                    <button type="submit" class="button icon-button" style="align-self: flex-start;">
+                        <span class="material-symbols-outlined">send</span>
+                        Publicar Comentário
+                    </button>
+                </form>
+            <% } %>
+        <% } else { %>
+            <div class="aviso-login font-medium">
+                <a href="/login" class="clickable font-underline">Faça login</a> para avaliar este produto.
+            </div>
+        <% } %>
+
+        <!-- Lista de comentários -->
+        <div class="lista-avaliacoes flex-column">
+            <% if (locals.avaliacoes && avaliacoes.length > 0) { %>
+                <% avaliacoes.forEach(avaliacao => { %>
+                    <div class="card-avaliacao flex-column">
+                        <div class="cabecalho-avaliacao">
+                            <div class="usuario-avaliacao">
+                                <span class="material-symbols-outlined">account_circle</span>
+                                <span class="font-large font-bold"><%= avaliacao.user ? avaliacao.user.username : 'Usuário' %></span>
+                            </div>
+                            <div class="nota-estrelas">
+                                <% for (let i = 1; i <= 5; i++) { %>
+                                    <span class="material-symbols-outlined estrela <%= i <= avaliacao.nota ? 'estrela-ativa' : 'estrela-inativa' %>">star</span>
+                                <% } %>
+                                <span class="font-medium font-bold">(<%= avaliacao.nota %>/5)</span>
+                            </div>
+                        </div>
+                        <div class="mensagem-avaliacao font-medium">
+                            <%= avaliacao.mensagem %>
+                        </div>
+                        <div class="rodape-avaliacao">
+                            <span class="font-small data-avaliacao"><%= new Date(avaliacao.createdAt).toLocaleDateString('pt-BR') %></span>
+                            <% if (locals.userId && locals.userId == avaliacao.userId) { %>
+                                <form method="POST" action="/remover-avaliacao/<%= avaliacao.id %>" style="margin: 0; max-width: 10%">
+                                    <button type="submit" class="button icon-button danger botao-apagar-avaliacao">
+                                        <span class="material-symbols-outlined">delete</span>
+                                        Apagar
+                                    </button>
+                                </form>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="sem-avaliacoes font-medium">
+                    Ainda não há comentários para este produto. Seja o primeiro a avaliar!
+                </div>
+            <% } %>
         </div>
     </div>
 </div>

@@ -10,7 +10,9 @@ const {
     existePerfilVendedor,
     getProdutosFromIds,
     getProdutoFromId,
-    getPerfilVendedor
+    getPerfilVendedor,
+    getAvaliacoesFromProduto,
+    getProdutosByCategoria
 } = require('./utils');
 const {
     sequelize,
@@ -25,6 +27,7 @@ const {
     Avaliacao,
     HistoricoEstadoPedido
 } = require('./db');
+const { Op } = require('sequelize');
 
 
 const express = require('express');
@@ -42,6 +45,14 @@ const io = new Server(server);
 
 //se algm mudar isso aqui é ban
 const TAMANHO_MINIMO_SENHA = 6 // 67
+
+const mapCategorias = {
+    'jogos-de-cartas': 'Jogos de Cartas',
+    'jogos-de-tabuleiro': 'Jogos de Tabuleiro',
+    'cartas': 'Jogos de Cartas',
+    'tabuleiro': 'Jogos de Tabuleiro',
+    'outros': 'Outros'
+};
 
 // Configuração do EJS
 app.set('views', path.join(__dirname, '../views'));
@@ -64,8 +75,70 @@ app.use(session({
 }));
 
 // Rota para a página inical
-app.get('/', (req, res) => {
-    return res.render('index', {username: req.session?.user?.username || null});
+app.get('/', async (req, res) => {
+    try {
+        const produtos = await Produto.findAll();
+        return res.render('index', {
+            produtos: produtos || [],
+            username: req.session?.user?.username || null
+        });
+    } catch (err) {
+        console.error(err);
+        return res.render('index', {
+            produtos: [],
+            username: req.session?.user?.username || null
+        });
+    }
+});
+
+
+
+app.get(['/categoria/:categoria', '/categoria', '/produtos/categoria/:categoria'], async (req, res) => {
+    try {
+        const paramCategoria = req.params.categoria || req.query.categoria || '';
+        const categoriaFormatada = mapCategorias[paramCategoria.toLowerCase()] || (paramCategoria ? decodeURIComponent(paramCategoria) : '');
+        
+        let produtos = [];
+        if (categoriaFormatada) {
+            produtos = await getProdutosByCategoria(categoriaFormatada);
+        } else {
+            produtos = await Produto.findAll();
+        }
+
+        res.render('categoria', {
+            nomeCategoria: categoriaFormatada || 'Todos',
+            produtos: produtos || [],
+            username: req.session?.user?.username || null
+        });
+    } catch (err) {
+        console.error(err);
+        res.redirect('/');
+    }
+});
+
+app.post('/pesquisa', async (req, res) => {
+    try {
+        const { search } = req.body;
+        const termo = search ? search.trim() : '';
+        const produtos = termo ? await Produto.findAll({
+            where: {
+                [Op.or]: [
+                    { nome: { [Op.like]: `%${termo}%` } },
+                    { descricao: { [Op.like]: `%${termo}%` } },
+                    { categoria: { [Op.like]: `%${termo}%` } }
+                ]
+            }
+        }) : await Produto.findAll();
+
+        res.render('categoria', {
+            nomeCategoria: termo ? `Busca: "${termo}"` : 'Todos',
+            produtos: produtos || [],
+            username: req.session?.user?.username || null
+        });
+    } catch (err) {
+        console.error(err);
+        res.redirect('/');
+    }
 });
 
 app.get('/perfil', exigirLogin, (req, res) => {
@@ -158,20 +231,124 @@ app.get(['/editar/:id', '/editar-produto/:id'], exigirVendedor, async (req, res)
 });
 
 app.get('/produto/:id', async (req, res) => {
-    const produtoId = req.params.id;
-    const produto = await getProdutoFromId(produtoId);
-    const loja = await getPerfilVendedor(produto.vendedorId);
-    res.render('produto', {
-        produto, // Manda o produto
-        loja,
-        username: req.session?.user?.username || null // é possível q um deslogado veja um produto
-    })
-})
+    try {
+        const produtoId = req.params.id;
+        const produto = await getProdutoFromId(produtoId);
+        if (!produto) {
+            return res.redirect('/');
+        }
+        const loja = await getPerfilVendedor(produto.vendedorId);
+        const avaliacoes = await getAvaliacoesFromProduto(produtoId);
+        const userId = req.session?.user?.id || null;
+        const usuarioJaAvaliou = userId ? avaliacoes.some(a => a.userId === userId) : false;
 
-app.get('/comprar/:id', exigirLogin, (req, res) => {
+        res.render('produto', {
+            produto,
+            loja,
+            avaliacoes,
+            usuarioJaAvaliou,
+            userId,
+            username: req.session?.user?.username || null
+        });
+    } catch (err) {
+        console.error(err);
+        res.redirect('/');
+    }
+});
+
+app.get('/comprar/:id', exigirLogin, async (req, res) => {
+    try {
+        const produtoId = req.params.id;
+        const produto = await getProdutoFromId(produtoId);
+
+        if (!produto) {
+            return res.redirect('/');
+        }
+
+        const loja = await getPerfilVendedor(produto.vendedorId);
+        const avaliacoes = await getAvaliacoesFromProduto(produtoId);
+        const userId = req.session?.user?.id || null;
+        const usuarioJaAvaliou = userId ? avaliacoes.some(a => a.userId === userId) : false;
+        console.log("Produto comprado!");
+
+        return res.render('produto', {
+            produto,
+            loja,
+            avaliacoes,
+            usuarioJaAvaliou,
+            userId,
+            username: req.session?.user?.username || null,
+            mensagem: 'Produto comprado com sucesso!'
+        });
+    } catch (err) {
+        console.error(err);
+        return res.redirect('/');
+    }
+});
+
+app.post('/produto/:id/avaliacao', exigirLogin, async (req, res) => {
     const produtoId = req.params.id;
-    console.log("Produto comprado!");
-})
+    const userId = req.session.user.id;
+    const { nota, mensagem } = req.body;
+
+    try {
+        const produto = await getProdutoFromId(produtoId);
+        if (!produto) {
+            return res.redirect('/');
+        }
+
+        // Verifica se o usuário já avaliou este produto
+        const avaliacaoExistente = await Avaliacao.findOne({
+            where: { produtoId, userId }
+        });
+
+        if (avaliacaoExistente) {
+            return res.redirect(`/produto/${produtoId}`);
+        }
+
+        const notaNum = parseInt(nota, 10);
+        if (isNaN(notaNum) || notaNum < 1 || notaNum > 5 || !mensagem || mensagem.trim() === '') {
+            return res.redirect(`/produto/${produtoId}`);
+        }
+
+        await Avaliacao.create({
+            produtoId,
+            userId,
+            nota: notaNum,
+            mensagem: mensagem.trim()
+        });
+
+        res.redirect(`/produto/${produtoId}`);
+    } catch (err) {
+        console.error(err);
+        res.redirect(`/produto/${produtoId}`);
+    }
+});
+
+app.post(['/remover-avaliacao/:id', '/avaliacao/remover/:id', '/produto/:produtoId/avaliacao/:id/remover'], exigirLogin, async (req, res) => {
+    const avaliacaoId = req.params.id;
+    const userId = req.session.user.id;
+
+    try {
+        const avaliacao = await Avaliacao.findByPk(avaliacaoId);
+        if (!avaliacao) {
+            return res.redirect('/');
+        }
+
+        // Apenas o autor da mensagem pode apagá-la
+        if (avaliacao.userId !== userId) {
+            return res.redirect(`/produto/${avaliacao.produtoId}`);
+        }
+
+        const produtoId = avaliacao.produtoId;
+        await avaliacao.destroy();
+
+        res.redirect(`/produto/${produtoId}`);
+    } catch (err) {
+        console.error(err);
+        res.redirect('/');
+    }
+});
 
 app.post('/cadastro', exigirUsuarioDeslogado, async (req, res) => {
 
@@ -334,7 +511,7 @@ app.post('/cadastro-vendedor', upload.single('logoLoja'), exigirLogin, async (re
 
 app.post('/novo-produto', upload.single('imagemProduto'), exigirVendedor, async (req, res) => {
     // coleta os dados da pagina
-    const {nome, descricao, preco, pecas, cartas} = req.body;
+    const {nome, categoria, descricao, preco, pecas, cartas} = req.body;
     const imagemProduto = req.file;
     const vendedorId = req.session.user.id; // o vendedor é o usuário que está atualmente logado
 
@@ -350,6 +527,7 @@ app.post('/novo-produto', upload.single('imagemProduto'), exigirVendedor, async 
         const produto = await Produto.create({
             vendedorId,
             nome,
+            categoria: categoria || null,
             descricao,
             preco,
             imagem: caminhoImagem,
@@ -378,7 +556,7 @@ app.post('/novo-produto', upload.single('imagemProduto'), exigirVendedor, async 
 
 app.post(['/editar/:id', '/editar-produto/:id'], upload.single('imagemProduto'), exigirVendedor, async (req, res) => {
     const produtoId = req.params.id;
-    const {nome, descricao, preco, pecas, cartas} = req.body;
+    const {nome, categoria, descricao, preco, pecas, cartas} = req.body;
     const vendedorId = req.session.user.id;
 
     try {
@@ -404,6 +582,7 @@ app.post(['/editar/:id', '/editar-produto/:id'], upload.single('imagemProduto'),
 
         await produto.update({
             nome,
+            categoria: categoria !== undefined ? categoria : produto.categoria,
             descricao,
             preco: parseFloat(preco),
             imagem: caminhoImagem,

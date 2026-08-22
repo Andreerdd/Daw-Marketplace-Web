@@ -128,6 +128,9 @@ const Produto = sequelize.define('Produto', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    categoria: {
+        type: DataTypes.STRING
+    },
     preco: {
         type: DataTypes.FLOAT,
         allowNull: false
@@ -147,7 +150,40 @@ const Carrinho = sequelize.define('Carrinho', {});
 const ItemCarrinho = sequelize.define('ItemCarrinho', {});
 const Pedido = sequelize.define('Pedido', {});
 const ItemPedido = sequelize.define('ItemPedido', {});
-const Avaliacao = sequelize.define('Avaliacao', {});
+const Avaliacao = sequelize.define('Avaliacao', {
+    id: {
+        type: ID_DATA_TYPE,
+        unique: true,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    produtoId: {
+        type: ID_DATA_TYPE,
+        allowNull: false
+    },
+    userId: {
+        type: ID_DATA_TYPE,
+        allowNull: false
+    },
+    mensagem: {
+        type: DataTypes.TEXT,
+        allowNull: false
+    },
+    nota: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+            min: 1,
+            max: 5
+        }
+    }
+});
+
+Avaliacao.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+User.hasMany(Avaliacao, { foreignKey: 'userId', as: 'avaliacoes' });
+Avaliacao.belongsTo(Produto, { foreignKey: 'produtoId', as: 'produto' });
+Produto.hasMany(Avaliacao, { foreignKey: 'produtoId', as: 'avaliacoes' });
+
 const HistoricoEstadoPedido = sequelize.define('HistoricoEstadoPedido', {});
 
 // Sincroniza o banco

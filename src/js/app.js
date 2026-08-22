@@ -158,6 +158,7 @@ app.get('/dashboard', exigirLogin, async (req, res) => {
         user: req.session.user,
         username: req.session.user.username,
         isVendor: !!(perfilVendedor), // os dois `!` é para ter certeza q é booleano
+        perfilVendedor: perfilVendedor,
         produtos: produtos // obtém os produtos do usuário local
     });
 });
@@ -437,6 +438,35 @@ app.get('/cadastro-vendedor', exigirLogin, (req, res) => {
     res.render('cadastro-vendedor', {username: req.session.user.username})
 })
 
+app.post('/atualizar-vendedor', upload.single('logoLoja'), exigirLogin, async (req, res) => {
+    const {nomeLoja} = req.body
+
+    try {
+        const vendedorExisting = await PerfilVendedor.findOne({where: {idUser: req.session.user.id}})
+
+        if (!vendedorExisting) {
+            console.log("o perfil de vendedor de algum jeito não existe!!!!!!!!")
+            res.redirect('/dashboard#dados')
+            return;
+        }
+
+        const idUser = req.session.user.id
+        const perfilVendedor = await getPerfilVendedor(idUser);
+        const caminhoImagem = req.file ? `/uploads/${req.file.filename}` : perfilVendedor.logoLoja;
+        // coloca o usuario no database
+        await PerfilVendedor.update(
+            {nomeLoja: nomeLoja, logoLoja: caminhoImagem},
+            {where: {idUser: idUser}}
+        )
+
+        console.log("perfilVendedor atualizado")
+        res.redirect('/dashboard#dados')
+    } catch (err) {
+        console.error(err)
+        res.redirect('/dashboard#dados')
+    }
+})
+
 app.get('/remover-produto/:id', exigirVendedor, async (req, res) => {
     const idProduto = req.params.id;
     const vendedorId = req.session.user.id;
@@ -467,8 +497,6 @@ app.get('/remover-produto/:id', exigirVendedor, async (req, res) => {
             mensagem: 'Erro interno ao atualizar o produto'
         });
     }
-
-
 })
 
 app.post('/cadastro-vendedor', upload.single('logoLoja'), exigirLogin, async (req, res) => {

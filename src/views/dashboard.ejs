@@ -7,20 +7,27 @@
         <a href="#dados"><span class="material-symbols-outlined">store</span>Dados da Loja</a>
         <a href="#produtos"><span class="material-symbols-outlined">package_2</span>Produtos</a>
         <a href="#precos"><span class="material-symbols-outlined">shoppingmode</span>Preços</a>
+        <a href="/logout" class="botao-deslogar"><span class="material-symbols-outlined">logout</span>Sair</a>
     </div>
     <div class="container" style="min-width: 640px; width: 70vw; height: 80vh;">
-        <a class="botao-deslogar" href="/logout">sair</a>
-        <h1><%= locals.user.username %></h1>
+        <h1><%= perfilVendedor.nomeLoja %></h1>
 
         <section class="perfil-section" id="dados">
             <h4>Perfil da Loja</h4>
-            <span>
-                    Aqui vão estar as opções de:
-                    <ul>
-                        <li>Editar nome da loja</li>
-                        <li>Editar logo da loja</li>
-                    </ul>
-                </span>
+            <form method="post" action="/atualizar-vendedor" enctype="multipart/form-data">
+                <label>
+                    Nome da Loja
+                    <input name="nomeLoja" type="text" value="<%= perfilVendedor.nomeLoja %>" class="input">
+                </label>
+                <label>
+                    Logo
+                    <div class="input">
+                        <input name="logoLoja" type="file" accept="image/png, image/jpeg" placeholder="" autocomplete="off" id="logo">
+                        <img id="preview-logo" src="<%= perfilVendedor.logoLoja %>" alt="Preview da imagem anexada" style="<%= perfilVendedor.logoLoja ? 'display: block;' : 'display: none;' %>">
+                    </div>
+                </label>
+                <button type="submit" class="button" style="max-height: 10%">Salvar</button>
+            </form>
         </section>
         <section class="perfil-section" id="produtos">
             <h4>Produtos</h4>
@@ -31,18 +38,24 @@
                     <span class="nome font-large"><%= produto.nome %></span>
                     <span class="font-medium">R$<%= produto.preco.toFixed(2) %></span>
 
-                    <div style="display: flex; flex-direction: row; gap: 16px; justify-content: space-between; align-items: center; margin-top: 16px;">
-                        <!-- se quiser trocar, pode troca -->
+                    <div style="display: flex; flex-direction: row; justify-content: center; align-items: center; margin-top: 8px; width: 100%;">
                         <a class="button icon-button" href="/produto/<%= produto.id %>">
                             <span class="material-symbols-outlined">shoppingmode</span>
                             Ver Produto
                         </a>
+                    </div>
+
+                    <div style="display: flex; flex-direction: row; justify-content: center; align-items: center; margin-top: 8px; width: 100%;">
                         <a class="button icon-button" href="/editar-produto/<%= produto.id %>">
                             <span class="material-symbols-outlined">edit</span>
                             Editar Produto
                         </a>
+                    </div>
+
+                    <div style="display: flex; flex-direction: row; justify-content: center; align-items: center; margin-top: 8px; width: 100%;">
                         <a class="button icon-button danger" href="/remover-produto/<%= produto.id %>">
                             <span class="material-symbols-outlined">delete</span>
+                            Deletar Produto
                         </a>
                     </div>
                 </div>
@@ -77,6 +90,21 @@
     document.getElementById('novoProdutoBtn')?.addEventListener('click', () => {
         window.location.href = '/novo-produto';
     });
+
+    const logoInput = document.getElementById("logo");
+    const logoImg = document.getElementById("preview-logo");
+
+    logoInput.addEventListener('change', (event) => {
+        const arquivo = event.target.files[0];
+        if(arquivo) {
+            const urlImagem = URL.createObjectURL(arquivo);
+            logoImg.src = urlImagem;
+            logoImg.style.display = "block";
+        } else {
+            logoImg.src = "";
+            // logoImg.style.display = "none";
+        }
+    })
 </script>
 
 <%- include('partials/footer') %>

@@ -650,12 +650,14 @@ input:checked + .pista::before {
 
 .botao-deslogar {
     position: absolute;
-    padding: 4px 12px;
+    padding: 4px 25px;
     border-radius: 8px;
 
     color: var(--error);
 
     font-size: var(--medium);
+
+    right: 0;
 }
 
 .botao-deslogar:hover {
@@ -700,7 +702,7 @@ ul {
 }
 
 .perfil-abas {
-
+    position: relative;
 }
 
 .perfil-section {

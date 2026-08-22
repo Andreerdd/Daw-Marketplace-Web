@@ -99,7 +99,7 @@ const PerfilVendedor = sequelize.define('PerfilVendedor', {
         allowNull: false
     },
     idProdutos: {
-        // NOTA: aqui, são guardados os IDS pra evitar q não fique sincronizado!
+        // NOTA: aqui, são guardados os IDS (pra evitar q o produto daqui não fique sincronizado)!
 
         // NOTA 2: não dá pra usar DataTypes.ARRAY no Sqlite! Por isso, troquei para JSON
         type: DataTypes.JSON, // array de ids
@@ -179,6 +179,8 @@ const Avaliacao = sequelize.define('Avaliacao', {
     }
 });
 
+// Associações (aquele trem do fantini de 1:m, n:m e tal)
+// "mysql workbench" em código s2
 Avaliacao.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 User.hasMany(Avaliacao, { foreignKey: 'userId', as: 'avaliacoes' });
 Avaliacao.belongsTo(Produto, { foreignKey: 'produtoId', as: 'produto' });

@@ -9,6 +9,9 @@
 
 	--clickable-text: #00c4ff;
 
+    --danger: #da253f;
+    --danger-alt: #c00c26;
+
 	--error: #f37989;
 	--error-alt: #e95568;
 
@@ -559,9 +562,6 @@ input:checked + .pista::before {
 
     gap: 16px;
 
-    border-radius: 8px;
-    padding: 8px 16px;
-
     cursor: pointer;
 
     transition: .2s ease-in-out;
@@ -570,13 +570,22 @@ input:checked + .pista::before {
 
     display: inline-flex;
     align-items: center;
-    justify-content: center;
 }
 
 .button:hover {
   background-color: var(--accent-alt);
   border-color: var(--accent);
   color: white;
+}
+
+.danger:hover {
+    background-color: var(--danger-alt);
+    border-color: var(--danger);
+}
+
+.danger {
+    background-color: var(--danger);
+    border-color: var(--danger-alt);
 }
 
 .searchbar {
@@ -837,6 +846,11 @@ ul {
 
 .produto-resumo > div {
     width: 100%;
+}
+
+#preview-imagem {
+    height: 240px;
+    width: 240px;
 }
 
 

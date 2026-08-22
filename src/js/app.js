@@ -68,10 +68,6 @@ app.get('/', (req, res) => {
     return res.render('index', {username: req.session?.user?.username || null});
 });
 
-app.get('/', (req, res) => {
-    return res.render('index', {username: req.session?.user?.username || null});
-});
-
 app.get('/perfil', exigirLogin, (req, res) => {
     return res.render('perfil', {user: req.session?.user, username: req.session?.user?.username});
 });
@@ -136,6 +132,30 @@ app.get('/cadastro', exigirUsuarioDeslogado, (_, res) => {
 app.get('/novo-produto', exigirVendedor, (_, res) => {
     res.render('cadastro-produto')
 })
+
+// obs: coloquei pros 2 links funcionarem :)
+app.get(['/editar/:id', '/editar-produto/:id'], exigirVendedor, async (req, res) => {
+    try {
+        const produtoId = req.params.id;
+        const produto = await getProdutoFromId(produtoId);
+
+        if (!produto) {
+            return res.redirect('/dashboard');
+        }
+
+        if (produto.vendedorId !== req.session.user.id) {
+            return res.redirect('/dashboard');
+        }
+
+        res.render('editar-produto', {
+            produto,
+            username: req.session.user.username
+        });
+    } catch (err) {
+        console.error(err);
+        res.redirect('/dashboard');
+    }
+});
 
 app.get('/produto/:id', async (req, res) => {
     const produtoId = req.params.id;
@@ -240,9 +260,42 @@ app.get('/cadastro-vendedor', exigirLogin, (req, res) => {
     res.render('cadastro-vendedor', {username: req.session.user.username})
 })
 
+app.get('/remover-produto/:id', exigirVendedor, async (req, res) => {
+    const idProduto = req.params.id;
+    const vendedorId = req.session.user.id;
+
+
+    try {
+        const produto = await getProdutoFromId(idProduto);
+
+        if (!produto) {
+            return res.redirect('/dashboard');
+        }
+
+        if (produto.vendedorId !== vendedorId) {
+            return res.redirect('/dashboard');
+        }
+
+        const nomeProduto = produto.nome;
+
+        console.log({idProduto, nomeProduto})
+
+        res.render('remover-produto', {idProduto: idProduto, nomeProduto: nomeProduto})
+
+    } catch (err) {
+        console.error(err);
+        res.render('remover-produto', {
+            idProduto: '',
+            nomeProduto: '',
+            mensagem: 'Erro interno ao atualizar o produto'
+        });
+    }
+
+
+})
+
 app.post('/cadastro-vendedor', upload.single('logoLoja'), exigirLogin, async (req, res) => {
 
-    console.log(req.body)
     // coleta os dados da pagina
     const {nomeLoja} = req.body;
     const logoLoja = req.file;
@@ -322,6 +375,83 @@ app.post('/novo-produto', upload.single('imagemProduto'), exigirVendedor, async 
     }
 
 })
+
+app.post(['/editar/:id', '/editar-produto/:id'], upload.single('imagemProduto'), exigirVendedor, async (req, res) => {
+    const produtoId = req.params.id;
+    const {nome, descricao, preco, pecas, cartas} = req.body;
+    const vendedorId = req.session.user.id;
+
+    try {
+        const produto = await getProdutoFromId(produtoId);
+
+        if (!produto) {
+            return res.redirect('/dashboard');
+        }
+
+        if (produto.vendedorId !== vendedorId) {
+            return res.redirect('/dashboard');
+        }
+
+        if (!nome || !preco || !descricao) {
+            return res.render('editar-produto', {
+                produto,
+                username: req.session.user.username,
+                mensagem: 'Preencha todos os campos obrigatórios corretamente'
+            });
+        }
+
+        const caminhoImagem = req.file ? `/uploads/${req.file.filename}` : produto.imagem;
+
+        await produto.update({
+            nome,
+            descricao,
+            preco: parseFloat(preco),
+            imagem: caminhoImagem,
+            pecas: (pecas !== undefined && pecas !== '') ? parseInt(pecas, 10) : 0,
+            cartas: (cartas !== undefined && cartas !== '') ? parseInt(cartas, 10) : 0
+        });
+
+        res.redirect('/dashboard');
+    } catch (err) {
+        console.error(err);
+        const produto = await getProdutoFromId(produtoId);
+        res.render('editar-produto', {
+            produto,
+            username: req.session.user.username,
+            mensagem: 'Erro interno ao atualizar o produto'
+        });
+    }
+});
+
+app.post(['/remover/:id', '/remover-produto/:id'], exigirVendedor, async (req, res) => {
+    const produtoId = req.params.id;
+    const {nome, descricao, preco, pecas, cartas} = req.body;
+    const vendedorId = req.session.user.id;
+
+    try {
+        const produto = await getProdutoFromId(produtoId);
+
+        if (!produto) {
+            return res.redirect('/dashboard');
+        }
+
+        if (produto.vendedorId !== vendedorId) {
+            return res.redirect('/dashboard');
+        }
+
+        await produto.destroy();
+
+        res.redirect('/dashboard');
+    } catch (err) {
+        console.error(err);
+        const produto = await getProdutoFromId(produtoId);
+        res.render('editar-produto', {
+            produto,
+            username: req.session.user.username,
+            mensagem: 'Erro interno ao remover o produto'
+        });
+    }
+});
 
 
 server.listen(3000, () => {

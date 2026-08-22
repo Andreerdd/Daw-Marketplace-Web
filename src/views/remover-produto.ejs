@@ -1,0 +1,17 @@
+<%- include('partials/header') %>
+
+<div class="flex-column" style="gap: 8px; align-self: center;">
+    <div class="container">
+        <h1>Realmente deseja apagar esse produto?</h1>
+        <span class="nome font-huge flex-center"><%= nomeProduto %></span>
+        <form action="/remover/<%= idProduto %>" method="post">
+            <button type="submit" class="button icon-button danger">Remover</button>
+        </form>
+    </div>
+
+    <% if(locals.mensagem) { %>
+    <span class="mensagem-erro"><%= mensagem %></span>
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>

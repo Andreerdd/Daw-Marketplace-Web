@@ -1,0 +1,65 @@
+<%- include('partials/header') %>
+
+<div class="container" style="min-width: 480px; width: 50vw;">
+    <form method="post" action="/editar/<%= produto.id %>" enctype="multipart/form-data">
+        <h1>Editar Produto</h1>
+        <label>
+            Nome
+            <input name="nome" type="text" value="<%= produto.nome %>" placeholder="" class="input" autocomplete="off" required>
+        </label>
+        <label>
+            Preço
+            <input name="preco" type="number" min="0.01" step="0.01" value="<%= produto.preco %>" placeholder="6.70" class="input" autocomplete="off"
+                   required>
+        </label>
+        <label>
+            Imagem do produto
+            <div class="input">
+                <input name="imagemProduto" type="file" accept="image/png, image/jpeg" placeholder="" autocomplete="off"
+                       id="imagemProduto">
+                <img id="preview-imagem" src="<%= produto.imagem %>" alt="Preview da imagem anexada" style="<%= produto.imagem ? 'display: block;' : 'display: none;' %>">
+            </div>
+        </label>
+
+        <label>
+            Descrição
+            <textarea name="descricao" type="text" placeholder="" class="input" autocomplete="off" required><%= produto.descricao %></textarea>
+        </label>
+        
+        <label>
+            Número de peças
+            <input name="pecas" type="number" min="0" step="1" value="<%= (produto.pecas !== null && produto.pecas !== undefined) ? produto.pecas : '' %>" class="input" autocomplete="off"
+                   required>
+        </label>
+        
+        <label>
+            Número de cartas
+            <input name="cartas" type="number" min="0" step="1" value="<%= (produto.cartas !== null && produto.cartas !== undefined) ? produto.cartas : '' %>" class="input" autocomplete="off"
+                   required>
+        </label>
+
+        <div style="display: flex; gap: 16px; width: 100%;">
+            <button type="submit" class="button">Salvar Alterações</button>
+            <a href="/dashboard" class="button" style="text-align: center; justify-content: center; text-decoration: none;">Cancelar</a>
+        </div>
+    </form>
+    <% if(locals.mensagem) { %>
+    <span class="mensagem-erro"><%= mensagem %></span>
+    <% } %>
+</div>
+
+<script>
+    const imagemInput = document.getElementById("imagemProduto");
+    const imagemImg = document.getElementById("preview-imagem");
+
+    // Sempre que o usuário trocar a imagem, atualiza a imagem de preview
+    imagemInput.addEventListener('change', (event) => {
+        const arquivo = event.target.files[0];
+        if (arquivo) {
+            imagemImg.src = URL.createObjectURL(arquivo);
+            imagemImg.style.display = "block";
+        }
+    });
+</script>
+
+<%- include('partials/footer') %>

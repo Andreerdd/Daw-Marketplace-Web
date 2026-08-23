@@ -25,6 +25,17 @@ async function exigirVendedor(req, res, next) {
     if (idLocal && await existePerfilVendedor(idLocal)) next();
     else res.redirect('/cadastro-vendedor');
 }
+/**
+ * Verifica se o usuário local tem um perfil de vendedor.
+ */
+
+function exigirAdmin(req, res, next) {
+    if (req.session?.user?.role === 'admin') {
+        next();
+    } else {
+        res.status(403).render('acesso-negado');
+    }
+}
 
 /**
  * Retorna se existe um perfil de vendedor com o id dado.

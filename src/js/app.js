@@ -7,6 +7,7 @@ const {
     exigirLogin,
     exigirUsuarioDeslogado,
     exigirVendedor,
+    exigirAdmin,
     existePerfilVendedor,
     getProdutosFromIds,
     getProdutoFromId,
@@ -179,6 +180,10 @@ app.post('/login', exigirUsuarioDeslogado, async (req, res) => {
             return res.render('login', {mensagem: 'Não encontramos esse usuário!'})
         }
 
+        if (user.bloqueado) {
+            return res.render('login', { mensagem: 'Essa conta está bloqueada.'})
+        }
+
         const correctPassword = await bcrypt.compare(password, user.password)
 
         if (!correctPassword) {
@@ -188,7 +193,8 @@ app.post('/login', exigirUsuarioDeslogado, async (req, res) => {
         req.session.user = {
             id: user.id,
             username: user.username,
-            email: user.email
+            email: user.email,
+            role: user.role
         }
 
         res.redirect('/')
@@ -660,6 +666,90 @@ app.post(['/remover/:id', '/remover-produto/:id'], exigirVendedor, async (req, r
     }
 });
 
+app.get('/admin', exigirAdmin, async (req, res) => {
+    try {
+        const quantidadeUsuarios = await User.count();
+        const quantidadeProdutos = await Produto.count();
+        const quantidadeAvaliacoes = await Avaliacao.count();
+
+        res.render('admin/dashboard', {
+            user: req.session.user,
+            quantidadeUsuarios,
+            quantidadeProdutos,
+            quantidadeAvaliacoes
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).render('erro-interno');
+    }
+});
+
+app.post('/admin/usuarios/:id/bloquear', exigirAdmin, async (req, res) => {
+    try {
+        const usuario = await User.findByPk(req.params.id);
+
+        if (!usuario) {
+            return res.status(404).redirect('/admin/usuarios');
+        }
+
+        // Não permite bloquear outro administrador
+        if (usuario.role === 'admin') {
+            return res.status(403).redirect('/admin/usuarios');
+        }
+
+        await usuario.update({
+            bloqueado: !usuario.bloqueado
+        });
+
+        res.redirect('/admin/usuarios');
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).redirect('/admin/usuarios');
+    }
+});
+
+app.get('/admin/produtos', exigirAdmin, async (req, res) => {
+    try {
+        const produtos = await Produto.findAll();
+
+        res.render('admin/produtos', {
+            produtos,
+            user: req.session.user
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).render('erro-interno');
+    }
+});
+
+app.post('/admin/produtos/:id/remover', exigirAdmin, async (req, res) => {
+    try {
+        const produto = await Produto.findByPk(req.params.id);
+
+        if (!produto) {
+            return res.status(404).redirect('/admin/produtos');
+        }
+
+        await produto.destroy();
+
+        res.redirect('/admin/produtos');
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).redirect('/admin/produtos');
+    }
+});
+
+//app.get('/admin/usuarios', exigirAdmin, ...);
+
+//app.get('/admin/vendedores', exigirAdmin, ...);
+
+//app.get('/admin/categorias', exigirAdmin, ...);
+
+//app.get('/admin/avaliacoes', exigirAdmin, ...);
 
 server.listen(3000, () => {
     console.log('Servidor rodando na porta 3000');

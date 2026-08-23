@@ -47,6 +47,19 @@ const User = sequelize.define('User', {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
+    },
+    role: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'cliente',
+        validate: {
+            isIn: [['cliente', 'admin']]
+        }
+    },
+    bloqueado: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     }
 }, {
     hooks: {
@@ -175,6 +188,14 @@ const Avaliacao = sequelize.define('Avaliacao', {
         validate: {
             min: 1,
             max: 5
+        }
+    },
+    status: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'aprovada',
+        validate: {
+            isIn: [['aprovada', 'pendente', 'oculta']]
         }
     }
 });

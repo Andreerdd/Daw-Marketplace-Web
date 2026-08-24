@@ -122,6 +122,7 @@ module.exports = {
     exigirVendedor,
     existePerfilVendedor,
     getProdutosFromIds,
+    exigirAdmin,
     getProdutoFromId,
     getPerfilVendedor,
     getAvaliacoesFromProduto,

@@ -1,0 +1,130 @@
+<%- include('partials/header') %>
+
+<main class="chat-page">
+    <aside class="chat-users">
+        <h2>Conversas</h2>
+        <% const contatos = Array.isArray(conversas) && conversas.length > 0 ? conversas : (usuarios || []); %>
+        <% if (!contatos || contatos.length === 0) { %>
+            <p class="chat-empty">Nenhuma outra conta disponível.</p>
+        <% } %>
+        <% (contatos || []).forEach((conta) => { %>
+            <a href="/chat?user=<%= conta.id %>" class="chat-user-item <%= Number(destinatarioId) === Number(conta.id) ? 'active' : '' %>">
+                <span class="material-symbols-outlined">person</span>
+                <span>
+                    <%= conta.username %>
+                    <% if (conta.ultimaMensagem) { %>
+                        <small><%= conta.ultimaMensagem %></small>
+                    <% } %>
+                </span>
+            </a>
+        <% }) %>
+    </aside>
+
+    <section class="chat-window">
+        <% if (!conversaAtiva) { %>
+            <div class="chat-empty-state">
+                <h3>Abra uma conversa</h3>
+                <p>Escolha uma conta ao lado para começar o chat.</p>
+            </div>
+        <% } else { %>
+            <div id="chatMensagens" class="chat-messages">
+                <% (mensagens || []).forEach((mensagem) => { %>
+                    <div class="chat-message <%= Number(mensagem.remetenteId) === Number(user.id) ? 'me' : 'other' %>">
+                        <div class="chat-message-author"><%= mensagem.remetente?.username || 'Conta' %></div>
+                        <div class="chat-message-content"><%= mensagem.conteudo %></div>
+                    </div>
+                <% }) %>
+            </div>
+
+            <form id="chatForm" class="chat-form" method="post" action="/chat/mensagem">
+                <input type="hidden" name="conversaId" value="<%= conversaAtiva.id %>">
+                <input type="text" name="conteudo" id="chatConteudo" placeholder="Digite sua mensagem..." required maxlength="1200">
+                <button type="submit">Enviar</button>
+            </form>
+        <% } %>
+    </section>
+</main>
+
+<% if (conversaAtiva) { %>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const conversaId = Number('<%= conversaAtiva.id %>');
+    const userId = Number('<%= user.id %>');
+    const userName = '<%= user.username %>';
+    const socket = io();
+
+    const mensagensEl = document.getElementById('chatMensagens');
+    const formEl = document.getElementById('chatForm');
+    const conteudoEl = document.getElementById('chatConteudo');
+
+    const rolarParaFim = () => {
+        if (!mensagensEl) return;
+        mensagensEl.scrollTop = mensagensEl.scrollHeight;
+    };
+
+    const renderMensagem = (mensagem) => {
+        if (!mensagensEl) return;
+
+        const itemEl = document.createElement('div');
+        itemEl.className = `chat-message ${Number(mensagem.remetenteId) === Number(userId) ? 'me' : 'other'}`;
+
+        const autorEl = document.createElement('div');
+        autorEl.className = 'chat-message-author';
+        autorEl.textContent = mensagem.remetente?.username || userName;
+
+        const conteudoMensagemEl = document.createElement('div');
+        conteudoMensagemEl.className = 'chat-message-content';
+        conteudoMensagemEl.textContent = mensagem.conteudo;
+
+        itemEl.appendChild(autorEl);
+        itemEl.appendChild(conteudoMensagemEl);
+        mensagensEl.appendChild(itemEl);
+        rolarParaFim();
+    };
+
+    socket.emit('chat:entrar', { conversaId, userId });
+
+    socket.on('chat:nova-mensagem', (mensagem) => {
+        if (Number(mensagem.conversaId) !== Number(conversaId)) {
+            return;
+        }
+        renderMensagem(mensagem);
+    });
+
+    formEl?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const texto = conteudoEl.value.trim();
+        if (!texto) {
+            return;
+        }
+
+        const body = new URLSearchParams();
+        body.append('conversaId', conversaId);
+        body.append('conteudo', texto);
+
+        const resposta = await fetch('/chat/mensagem', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body
+        });
+
+        if (!resposta.ok) {
+            return;
+        }
+
+        const respostaData = await resposta.json().catch(() => null);
+        if (respostaData?.ok && respostaData.mensagem) {
+            renderMensagem(respostaData.mensagem);
+        }
+
+        conteudoEl.value = '';
+    });
+
+    rolarParaFim();
+</script>
+<% } %>
+
+<%- include('partials/footer') %>

@@ -163,6 +163,42 @@ const Carrinho = sequelize.define('Carrinho', {});
 const ItemCarrinho = sequelize.define('ItemCarrinho', {});
 const Pedido = sequelize.define('Pedido', {});
 const ItemPedido = sequelize.define('ItemPedido', {});
+const Conversa = sequelize.define('Conversa', {
+    id: {
+        type: ID_DATA_TYPE,
+        unique: true,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    user1Id: {
+        type: ID_DATA_TYPE,
+        allowNull: false
+    },
+    user2Id: {
+        type: ID_DATA_TYPE,
+        allowNull: false
+    }
+});
+const Mensagem = sequelize.define('Mensagem', {
+    id: {
+        type: ID_DATA_TYPE,
+        unique: true,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    conversaId: {
+        type: ID_DATA_TYPE,
+        allowNull: false
+    },
+    remetenteId: {
+        type: ID_DATA_TYPE,
+        allowNull: false
+    },
+    conteudo: {
+        type: DataTypes.TEXT,
+        allowNull: false
+    }
+});
 const Avaliacao = sequelize.define('Avaliacao', {
     id: {
         type: ID_DATA_TYPE,
@@ -207,6 +243,16 @@ User.hasMany(Avaliacao, { foreignKey: 'userId', as: 'avaliacoes' });
 Avaliacao.belongsTo(Produto, { foreignKey: 'produtoId', as: 'produto' });
 Produto.hasMany(Avaliacao, { foreignKey: 'produtoId', as: 'avaliacoes' });
 
+Conversa.belongsTo(User, { foreignKey: 'user1Id', as: 'user1' });
+Conversa.belongsTo(User, { foreignKey: 'user2Id', as: 'user2' });
+User.hasMany(Conversa, { foreignKey: 'user1Id', as: 'conversasComoUser1' });
+User.hasMany(Conversa, { foreignKey: 'user2Id', as: 'conversasComoUser2' });
+
+Mensagem.belongsTo(Conversa, { foreignKey: 'conversaId', as: 'conversa' });
+Conversa.hasMany(Mensagem, { foreignKey: 'conversaId', as: 'mensagens' });
+Mensagem.belongsTo(User, { foreignKey: 'remetenteId', as: 'remetente' });
+User.hasMany(Mensagem, { foreignKey: 'remetenteId', as: 'mensagensEnviadas' });
+
 const HistoricoEstadoPedido = sequelize.define('HistoricoEstadoPedido', {});
 
 // Sincroniza o banco
@@ -222,6 +268,8 @@ module.exports = {
     ItemCarrinho,
     Pedido,
     ItemPedido,
+    Conversa,
+    Mensagem,
     Avaliacao,
     HistoricoEstadoPedido
 };

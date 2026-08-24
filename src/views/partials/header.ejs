@@ -27,6 +27,10 @@
                 </form>
             </div>
 
+            <% if (locals.username) { %>
+                <a href="/chat" class="a">Chat</a>
+            <% } %>
+
             <div>
                 <% if (locals.username) { %>
                     <a id="usuario" href="/perfil#conta" class="a">

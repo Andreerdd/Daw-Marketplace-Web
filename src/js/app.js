@@ -25,6 +25,8 @@ const {
     ItemCarrinho,
     Pedido,
     ItemPedido,
+    Conversa,
+    Mensagem,
     Avaliacao,
     HistoricoEstadoPedido
 } = require('./db');
@@ -162,6 +164,160 @@ app.get('/dashboard', exigirLogin, async (req, res) => {
         perfilVendedor: perfilVendedor,
         produtos: produtos // obtém os produtos do usuário local
     });
+});
+
+const getConversaEntreUsuarios = async (userId1, userId2) => {
+    if (!userId1 || !userId2 || userId1 === userId2) {
+        return null;
+    }
+
+    return Conversa.findOne({
+        where: {
+            [Op.or]: [
+                { user1Id: userId1, user2Id: userId2 },
+                { user1Id: userId2, user2Id: userId1 }
+            ]
+        }
+    });
+};
+
+const getConversasDoUsuario = async (userId) => {
+    if (!userId) {
+        return [];
+    }
+
+    const conversas = await Conversa.findAll({
+        where: {
+            [Op.or]: [{ user1Id: userId }, { user2Id: userId }]
+        },
+        include: [
+            { model: User, as: 'user1', attributes: ['id', 'username'] },
+            { model: User, as: 'user2', attributes: ['id', 'username'] },
+            {
+                model: Mensagem,
+                as: 'mensagens',
+                limit: 1,
+                order: [['createdAt', 'DESC']],
+                include: [{ model: User, as: 'remetente', attributes: ['id', 'username'] }]
+            }
+        ],
+        order: [['updatedAt', 'DESC']]
+    });
+
+    return conversas
+        .map((conversa) => {
+            const outroUsuario = conversa.user1Id === userId ? conversa.user2 : conversa.user1;
+            const ultimaMensagem = conversa.mensagens?.[0];
+
+            return {
+                id: outroUsuario?.id,
+                username: outroUsuario?.username || 'Usuário',
+                conversaId: conversa.id,
+                ultimaMensagem: ultimaMensagem ? ultimaMensagem.conteudo : ''
+            };
+        })
+        .filter((contato) => contato.id && contato.id !== userId);
+};
+
+app.get('/chat', exigirLogin, async (req, res) => {
+    const userId = req.session.user.id;
+    const destinatarioIdRaw = req.query.user;
+
+    try {
+        const usuarios = await User.findAll({
+            where: {
+                id: {
+                    [Op.ne]: userId
+                }
+            },
+            attributes: ['id', 'username']
+        });
+
+        const conversas = await getConversasDoUsuario(userId);
+        const destinatarioId = destinatarioIdRaw ? parseInt(destinatarioIdRaw, 10) : null;
+        let conversaAtiva = null;
+        let mensagens = [];
+
+        if (destinatarioId && destinatarioId !== userId) {
+            const destinatario = await User.findByPk(destinatarioId);
+            if (destinatario) {
+                conversaAtiva = await getConversaEntreUsuarios(userId, destinatarioId);
+                if (!conversaAtiva) {
+                    conversaAtiva = await Conversa.create({
+                        user1Id: userId,
+                        user2Id: destinatarioId
+                    });
+                }
+
+                mensagens = await Mensagem.findAll({
+                    where: {
+                        conversaId: conversaAtiva.id
+                    },
+                    include: [{
+                        model: User,
+                        as: 'remetente',
+                        attributes: ['id', 'username']
+                    }],
+                    order: [['createdAt', 'ASC']]
+                });
+            }
+        }
+
+        return res.render('chat', {
+            username: req.session.user.username,
+            user: req.session.user,
+            usuarios,
+            conversas,
+            conversaAtiva,
+            mensagens,
+            destinatarioId: destinatarioId || null
+        });
+    } catch (err) {
+        console.error(err);
+        return res.redirect('/');
+    }
+});
+
+app.post('/chat/mensagem', exigirLogin, async (req, res) => {
+    const remetenteId = req.session.user.id;
+    const { conversaId, conteudo } = req.body;
+
+    try {
+        const texto = (conteudo || '').trim().slice(0, 1200);
+        const conversa = await Conversa.findByPk(conversaId);
+
+        if (!conversa || !texto) {
+            return res.status(400).json({ ok: false, mensagem: 'Dados inválidos.' });
+        }
+
+        if (conversa.user1Id !== remetenteId && conversa.user2Id !== remetenteId) {
+            return res.status(403).json({ ok: false, mensagem: 'Você não participa dessa conversa.' });
+        }
+
+        const novaMensagem = await Mensagem.create({
+            conversaId: conversa.id,
+            remetenteId,
+            conteudo: texto
+        });
+
+        const remetente = await User.findByPk(remetenteId, { attributes: ['id', 'username'] });
+
+        const payloadMensagem = {
+            id: novaMensagem.id,
+            conversaId: novaMensagem.conversaId,
+            remetenteId: novaMensagem.remetenteId,
+            conteudo: novaMensagem.conteudo,
+            createdAt: novaMensagem.createdAt,
+            remetente
+        };
+
+        io.to(`chat:${conversa.id}`).emit('chat:nova-mensagem', payloadMensagem);
+
+        return res.json({ ok: true, mensagem: payloadMensagem });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ ok: false, mensagem: 'Erro ao enviar mensagem.' });
+    }
 });
 
 app.get('/login', exigirUsuarioDeslogado, (_, res) => {
@@ -750,6 +906,25 @@ app.post('/admin/produtos/:id/remover', exigirAdmin, async (req, res) => {
 //app.get('/admin/categorias', exigirAdmin, ...);
 
 //app.get('/admin/avaliacoes', exigirAdmin, ...);
+
+io.on('connection', (socket) => {
+    socket.on('chat:entrar', async ({ conversaId, userId }) => {
+        if (!conversaId || !userId) {
+            return;
+        }
+
+        const conversa = await Conversa.findByPk(conversaId);
+        if (!conversa) {
+            return;
+        }
+
+        if (conversa.user1Id !== userId && conversa.user2Id !== userId) {
+            return;
+        }
+
+        socket.join(`chat:${conversaId}`);
+    });
+});
 
 server.listen(3000, () => {
     console.log('Servidor rodando na porta 3000');

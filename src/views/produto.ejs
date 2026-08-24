@@ -16,10 +16,12 @@
                 <span class="font-medium">
                     De
                     <a class="display-inline">
-                        <span class="font-medium font-bold font-underline clickable"><%= loja.nomeLoja %></span>
+                        <span class="font-medium font-bold font-underline clickable-text"><%= loja.nomeLoja %></span>
                     </a>
+                </span>
+                <span class="font-medium">
                     <% if (produto.categoria) { %>
-                        • Categoria: <a href="/categoria/<%= encodeURIComponent(produto.categoria) %>" class="display-inline"><span class="font-medium font-bold font-underline clickable"><%= produto.categoria %></span></a>
+                        Categoria: <a href="/categoria/<%= encodeURIComponent(produto.categoria) %>" class="display-inline"><span class="font-medium font-bold font-underline clickable-text"><%= produto.categoria %></span></a>
                     <% } %>
                 </span>
                 
@@ -45,11 +47,21 @@
                 <br>
 
                 <span class="font-huge font-bold">R$<%= produto.preco.toFixed(2) %></span>
-                <button class="button icon-button width100"
+                <div style="display: flex; flex-direction: row; gap: 8px;">
+                    <button id="adicionar-carrinho" class="button icon-button" style="flex-grow: 1;">
+                        <span class="material-symbols-outlined">add_shopping_cart</span>
+                        Adicionar ao carrinho
+                    </button>
+
+                    <button id="remover-carrinho" class="button danger icon-button" style="flex-grow: 0;">
+                        <span class="material-symbols-outlined">remove_shopping_cart</span>
+                    </button>
+                </div>
+                <!-- <button class="button icon-button width100"
                         onclick="window.location.href='/comprar/<%= produto.id %>'">
                     <span class="material-symbols-outlined">shopping_cart</span>
                     Comprar
-                </button>
+                </button> -->
             </div>
         </div>
     </div>
@@ -92,7 +104,7 @@
             <% } %>
         <% } else { %>
             <div class="aviso-login font-medium">
-                <a href="/login" class="clickable font-underline">Faça login</a> para avaliar este produto.
+                <a href="/login" class="clickable-text font-underline">Faça login</a> para avaliar este produto.
             </div>
         <% } %>
 
@@ -138,3 +150,55 @@
     </div>
 </div>
 <%- include('partials/footer') %>
+
+<script>
+    const botaoRemoverCarrinho = document.getElementById("remover-carrinho");
+    const botaoCarrinho = document.getElementById("adicionar-carrinho");
+
+    atualizarCarrinho(0);
+
+    botaoRemoverCarrinho.addEventListener("click", (event) => atualizarCarrinho(-1));
+    botaoCarrinho.addEventListener("click", (event) => atualizarCarrinho(1));
+
+    function atualizarCarrinho(quantidade) {
+        let carrinho = JSON.parse(sessionStorage.getItem("carrinho")) || [];
+        
+        const produto = {
+            id: "<%= produto.id %>",
+            nome: "<%= produto.nome %>",
+            preco: "<%= produto.preco %>",
+            imagem: "<%= produto.imagem %>",
+            loja: "<%= loja.nomeLoja %>"
+        };
+        
+        const indexProdutoAtual = carrinho.findIndex(item => item.id === produto.id);
+        
+        if (indexProdutoAtual !== -1) {
+            carrinho[indexProdutoAtual].quantidade += quantidade;
+            if(carrinho[indexProdutoAtual].quantidade > 0) {
+                botaoCarrinho.innerHTML = `<span class="material-symbols-outlined">add_shopping_cart</span> Adicionar ao carrinho (${carrinho[indexProdutoAtual].quantidade})`;
+                botaoRemoverCarrinho.style.display = "flex";
+
+                console.log("adicionado ao carrinho!");
+            } else {
+                botaoRemoverCarrinho.style.display = "none";
+                botaoCarrinho.innerHTML = `<span class="material-symbols-outlined">add_shopping_cart</span> Adicionar ao carrinho`;
+                
+                carrinho.splice(indexProdutoAtual, 1);
+            }
+        } else {
+            botaoRemoverCarrinho.style.display = "none";
+
+            if(quantidade > 0) {
+                produto.quantidade = 1;
+                botaoCarrinho.innerHTML = `<span class="material-symbols-outlined">add_shopping_cart</span> Adicionar ao carrinho (1)`;
+                botaoRemoverCarrinho.style.display = "flex";
+                carrinho.push(produto);
+            } else {
+                botaoCarrinho.innerHTML = `<span class="material-symbols-outlined">add_shopping_cart</span> Adicionar ao carrinho`;
+            }
+        }
+        
+        sessionStorage.setItem("carrinho", JSON.stringify(carrinho));
+    }
+</script>

@@ -419,34 +419,23 @@ app.get('/produto/:id', async (req, res) => {
     }
 });
 
-app.get('/comprar/:id', exigirLogin, async (req, res) => {
+
+app.get('/carrinho', async (req, res) => {
     try {
-        const produtoId = req.params.id;
-        const produto = await getProdutoFromId(produtoId);
-
-        if (!produto) {
-            return res.redirect('/');
-        }
-
-        const loja = await getPerfilVendedor(produto.vendedorId);
-        const avaliacoes = await getAvaliacoesFromProduto(produtoId);
-        const userId = req.session?.user?.id || null;
-        const usuarioJaAvaliou = userId ? avaliacoes.some(a => a.userId === userId) : false;
-        console.log("Produto comprado!");
-
-        return res.render('produto', {
-            produto,
-            loja,
-            avaliacoes,
-            usuarioJaAvaliou,
-            userId,
-            username: req.session?.user?.username || null,
-            mensagem: 'Produto comprado com sucesso!'
+        res.render('carrinho', {
+            username: req.session?.user?.username || null
         });
     } catch (err) {
         console.error(err);
-        return res.redirect('/');
+        res.redirect('/');
     }
+});
+
+app.get('/comprar/', exigirLogin, async (req, res) => {
+    return res.render('carrinho', {
+        username: req.session?.user?.username,
+        limparCarrinho: true
+    });
 });
 
 app.post('/produto/:id/avaliacao', exigirLogin, async (req, res) => {

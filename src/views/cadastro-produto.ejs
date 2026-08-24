@@ -14,12 +14,20 @@
         </label>
         <label>
             Categoria
-            <select name="categoria" class="input" required style="z-index: 1; cursor: pointer;">
-                <option value="" disabled selected>Selecione uma categoria</option>
-                <option value="Jogos de Cartas">Jogos de Cartas</option>
-                <option value="Jogos de Tabuleiro">Jogos de Tabuleiro</option>
-                <option value="Outros">Outros</option>
-            </select>
+            <div class="botoes-selecao input">
+                <label class="botao-radio">
+                    <input type="radio" name="categoria" value="Jogos de Cartas" required>
+                    <span class="conteudo-botao">Cartas</span>
+                </label>
+                <label class="botao-radio">
+                    <input type="radio" name="categoria" value="Jogos de Tabuleiro" required>
+                    <span class="conteudo-botao">Tabuleiro</span>
+                </label>
+                <label class="botao-radio">
+                    <input type="radio" name="categoria" value="Outros" required>
+                    <span class="conteudo-botao">Outro</span>
+                </label>
+            </div>
         </label>
         <label>
             Imagem do produto

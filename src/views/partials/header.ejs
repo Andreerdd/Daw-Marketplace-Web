@@ -8,7 +8,7 @@
 <body>
     <div class="header">
         <div class="header-left">
-            <a class="jueguitos-logo" href="/"><span class="icone-logo material-symbols-outlined" style="font-weight: 1000">playing_cards</span>jueguitos</a>
+            <a class="a jueguitos-logo" href="/"><span class="icone-logo material-symbols-outlined" style="font-weight: 1000">playing_cards</span>jueguitos</a>
         
             <div class="categoria-header">
                 <span>Categorias</span>
@@ -28,8 +28,15 @@
             </div>
 
             <% if (locals.username) { %>
-                <a href="/chat" class="a">Chat</a>
-            <% } %>
+                <a href="/chat" class="a">
+                    <span class="material-symbols-outlined">chat</span>
+                    Chat
+                </a>
+                <% } %>
+            <a href="/carrinho" class="a" style="position: relative;">
+                <span class="material-symbols-outlined">shopping_cart</span>
+                <span class="carrinho-compras" id="carrinho-numero">-1</span>
+            </a>
 
             <div>
                 <% if (locals.username) { %>
@@ -43,3 +50,14 @@
             </div>
         </div>
     </div>
+
+    <script>
+        let carrinho = JSON.parse(sessionStorage.getItem("carrinho")) || [];
+        let tamanhoCarrinho = 0;
+
+        carrinho.forEach(produto => {
+            tamanhoCarrinho += produto.quantidade;
+        });
+        const carrinhoNumero = document.getElementById("carrinho-numero");
+        carrinhoNumero.textContent = tamanhoCarrinho;
+    </script>

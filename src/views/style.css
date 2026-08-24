@@ -18,6 +18,7 @@
 	--success: #48bb78;
 	--success-alt: #38a169;
 
+	--extra-small: 9px;
 	--small: 12px;
 	--medium: 16px;
 	--large: 18px;
@@ -38,6 +39,10 @@
 
     --success: #38a169;
     --success-alt: #2f855a;
+}
+
+.accent {
+    color: var(--accent);
 }
 
 .font-small {
@@ -91,8 +96,11 @@
     display: inline;
 }
 
-.clickable {
+.clickable-text {
     color: var(--clickable-text);
+}
+.clickable {
+    cursor: pointer;
 }
 
 * {
@@ -308,7 +316,7 @@ body {
     transform: translateY(0);
 }
 
-a {
+a:not(.no-a) {
     text-decoration: none;
     color: var(--text);
     transition: 0.2s;
@@ -323,10 +331,23 @@ a {
     cursor: pointer;
 }
 
-a:hover {
+a:not(.no-a):hover {
     color: var(--accent-alt);
 }
 
+.no-a {
+    text-decoration: none;
+    color: var(--text);
+
+    gap: 8px;
+
+    display: flex;
+    flex-direction: row;
+
+    align-content: center;
+
+    cursor: pointer;
+}
 
 .container {
     display: flex;
@@ -382,6 +403,9 @@ form {
     gap: 12px;
 }
 
+label:has(div.botoes-selecao),
+label:has(textarea),
+label:has(select),
 label:has(input[type="text"]),
 label:has(input[type="password"]),
 label:has(input[type="email"]),
@@ -405,19 +429,19 @@ label:has(input[type="number"]) {
     z-index: 0;
 }
 
-.input:not(input[type="file"]) {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
+.input:not(input[type="file"]):not(input[type="radio"]) {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
 
-  outline: none;
-  padding: 8px;
-  /* padding-left: 16px;
-  padding-right: 16px; */
-  margin-top: -8px;
-  background-color: var(--background-alt);
-  border: 2px solid var(--background);
+    outline: none;
+    padding: 8px;
+    /* padding-left: 16px;
+    padding-right: 16px; */
+    margin-top: -8px;
+    background-color: var(--background-alt);
+    border: 2px solid var(--background);
 
     border-radius: 8px;
 
@@ -428,6 +452,8 @@ label:has(input[type="number"]) {
     width: 100%;
 
     z-index: -1;
+
+    resize: vertical;
 }
 
 .input:disabled:not(input[type="file"]) {
@@ -487,21 +513,56 @@ label:has(input[type="number"]) {
   width: 240px;
 }
 
-label:has(input[type="checkbox"]) {
+.botoes-selecao {
     display: flex;
     flex-direction: row;
-    justify-content: start;
-
-    align-items: center;
-
-    font-size: var(--medium);
-
-    width: 100%;
-
     gap: 16px;
+    width: 100%;
+    margin-top: 8px;
+    z-index: 1;
+}
+
+.botao-radio input[type="radio"] {
+    display: none;
+}
+
+.botao-radio {
+    flex: 1;
+    cursor: pointer;
+    display: block;
+}
+
+.botao-radio .conteudo-botao {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background-color: var(--background);
+    border: 2px solid var(--background);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: var(--medium);
+    transition: 0.2s ease-in-out;
+    text-align: center;
+    user-select: none;
+    text-shadow: none;
+}
+
+.botao-radio:hover .conteudo-botao {
+    border-color: var(--accent);
+}
+
+.botao-radio input[type="radio"]:checked + .conteudo-botao {
+    background-color: var(--accent);
+    border-color: var(--accent-alt);
+    color: var(--text);
 }
 
 input[type="checkbox"] {
+    display: none;
+}
+
+input[type="checkbox"].switch {
     display: none;
 }
 
@@ -519,7 +580,7 @@ input[type="checkbox"] {
     transition: 0.1s ease-in-out;
 }
 
-input:checked + .pista {
+input.switch:checked + .pista {
     background-color: var(--background-alt);
     border: 2px solid var(--accent);
 }
@@ -536,7 +597,7 @@ input:checked + .pista {
     transition: 0.1s ease-in-out;
 }
 
-input:checked + .pista::before {
+input.switch:checked + .pista::before {
     content: "";
     position: absolute;
     height: 12px;
@@ -1076,6 +1137,55 @@ html::-webkit-scrollbar-thumb:hover {
     font-size: var(--small);
     border-radius: 6px;
     cursor: pointer;
+}
+
+.carrinho-compras {
+    display: flex;
+    position: relative;
+    padding: 2px;
+    height: 18px;
+    width: auto;
+    min-width: 18px;
+    border-radius: 9px;
+
+    left: -16px;
+    top: -8px;
+
+    align-content: center;
+    justify-content: center;
+
+    background-color: var(--background-alt);
+    border: 2px solid var(--text);
+    outline: 2px solid var(--background-alt);
+    color: var(--text);
+
+    font-size: var(--extra-small);
+}
+
+.carrinho-lista-produtos {
+    display: flex;
+    flex-direction: column;
+    
+    position: relative;
+
+    width: 100%;
+    align-self: center;
+
+    justify-items: center;
+    align-content: center;
+
+    background-color: var(--background);
+    border-radius: 16px;
+
+    padding: 16px;
+
+    gap: 16px;
+}
+
+.produto-carrinho:hover {
+    background-color: var(--background);
+    border: 2px solid var(--background-alt);
+    transition: 0.1s ease-in-out;
 }
 
 .chat-page {

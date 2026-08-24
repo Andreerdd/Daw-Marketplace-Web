@@ -1,0 +1,77 @@
+<%- include('partials/header') %>
+<div class="container">
+    <h1>Carrinho de Compras</h1>
+    <div class="carrinho-lista-produtos" id="lista-carrinho">
+        <template id="template-produto">
+            <a class="link-produto no-a clickable">
+            <div class="container-inner produto-carrinho" style="display: flex; flex-direction: row; align-items: center; gap: 24px;">
+                <img class="img-produto" src="" style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px;">
+                
+                <div class="flex-column" style="flex-grow: 1; gap: 16px;">
+                    <span class="nome-produto font-extra-large font-bold"></span>
+                    <span class="font-medium">Vendido por: <span class="loja-produto font-bold clickable-text"></span></span>
+                    <span class="quantidade-produto font-medium"></span>
+                    <span class="font-medium">Preço: R$<span class="preco-produto"></span></span>
+                </div>
+                
+                <div class="flex-column" style="align-items: flex-end;">
+                    <span>Subtotal:</span>
+                    <span><span class="font-extra-large font-bold accent">R$</span><span class="subtotal-produto font-large font-bold"></span></span>
+                </div>
+            </div>
+            </a>
+        </template>
+    </div>
+    <h3>Total: <span class="accent" id="total-compra"></span></h3>
+    <% if(locals.username) { %>
+    <button class="button icon-button width100"
+        onclick="window.location.href='/comprar/'">
+        <span class="material-symbols-outlined">attach_money</span>
+        Finalizar compra
+    </button>
+    <% } else { %>
+    <button class="button icon-button width100"
+        onclick="window.location.href='/login/'">
+        <span class="material-symbols-outlined">attach_money</span>
+        Acesse sua conta para finalizar a compra
+    </button>
+    <% } %>
+</div>
+<%- include('partials/footer') %>
+
+<% if (locals.limparCarrinho) { %>
+    <script>
+        sessionStorage.removeItem("carrinho");
+        carrinho = [];
+        window.location.href = "/";
+    </script>
+<% } %>
+
+<script>
+
+    const templateProduto = document.getElementById("template-produto");
+    const listaCarrinho = document.getElementById("lista-carrinho");
+    const totalCompra = document.getElementById("total-compra");
+
+    let total = 0;
+
+    carrinho.forEach(produto => {
+        const clone = templateProduto.content.cloneNode(true);
+        
+        clone.querySelector(".link-produto").href = `/produto/${produto.id}`;
+
+        clone.querySelector(".img-produto").src = produto.imagem;
+        clone.querySelector(".nome-produto").innerText = produto.nome;
+        clone.querySelector(".loja-produto").innerText = produto.loja;
+        clone.querySelector(".quantidade-produto").innerText = `Quantidade: ${produto.quantidade}`;
+        
+        clone.querySelector(".preco-produto").innerText = `${produto.preco}`;
+        clone.querySelector(".subtotal-produto").innerText = `${produto.preco * produto.quantidade}`;
+        total += produto.preco * produto.quantidade;
+        
+        listaCarrinho.appendChild(clone);
+    });
+
+    totalCompra.textContent = `R$${total}`;
+    
+</script>

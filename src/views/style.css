@@ -844,7 +844,7 @@ ul {
 .div-lista-produtos {
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: flex-start;
 
     padding: 0;
@@ -866,7 +866,8 @@ ul {
     overflow: hidden;
     border: 2px solid var(--background);
 
-    width: calc(100%/3 - 1*16px/2 - 2.66px);
+    /*width: calc(100%/3 - 1*16px/2 - 2.66px);*/
+    width: 31%;
 
     margin: 0;
     padding: 16px;

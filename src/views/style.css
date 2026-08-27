@@ -844,12 +844,13 @@ ul {
 .div-lista-produtos {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: flex-start;
 
     padding: 0;
     margin: 0;
     gap: 16px;
+    margin-left: 48px;
 
     /* Para scrollar apenas para baixo */
     overflow-y: auto;

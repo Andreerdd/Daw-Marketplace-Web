@@ -12,9 +12,6 @@
                 <span class="material-symbols-outlined">person</span>
                 <span>
                     <%= conta.username %>
-                    <% if (conta.ultimaMensagem) { %>
-                        <small><%= conta.ultimaMensagem %></small>
-                    <% } %>
                 </span>
             </a>
         <% }) %>
@@ -38,15 +35,16 @@
 
             <form id="chatForm" class="chat-form" method="post" action="/chat/mensagem">
                 <input type="hidden" name="conversaId" value="<%= conversaAtiva.id %>">
-                <input type="text" name="conteudo" id="chatConteudo" placeholder="Digite sua mensagem..." required maxlength="1200">
+                <label for="chatConteudo" class="sr-only">Digite sua mensagem</label>
+                <input type="text" name="conteudo" id="chatConteudo" placeholder="Digite sua mensagem" required maxlength="1200" aria-label="Mensagem">
                 <button type="submit">Enviar</button>
-            </form>
+            </form>"
         <% } %>
     </section>
 </main>
 
 <% if (conversaAtiva) { %>
-<script src="/socket.io/socket.io.js"></script>
+<script src="/socket.io/socket.io.js"></script> <!-- "importa o socket" -->
 <script>
     const conversaId = Number('<%= conversaAtiva.id %>');
     const userId = Number('<%= user.id %>');
@@ -117,7 +115,7 @@
 
         const respostaData = await resposta.json().catch(() => null);
         if (respostaData?.ok && respostaData.mensagem) {
-            renderMensagem(respostaData.mensagem);
+            //renderMensagem(respostaData.mensagem);
         }
 
         conteudoEl.value = '';

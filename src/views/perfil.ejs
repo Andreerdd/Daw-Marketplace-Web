@@ -30,7 +30,7 @@
         
         <section class="perfil-section" id="preferencias">
             <h4>Preferências</h4>
-            <label class="switch">
+            <label class="switch" style="display: flex; flex-direction: row; justify-content: flex-start; align-items: center; gap: 8px;">
                 Tema Escuro
                 <input type="checkbox" id="tema-escuro" class="switch" checked>
                 <span class="pista"></span>
@@ -70,6 +70,13 @@ temaBotao.addEventListener('change', (event) => {
     let tema = event.target.checked ? "escuro" : "claro";
     document.documentElement.setAttribute('tema', tema);
     localStorage.setItem('tema', tema);
+
+    // Desativa o botão por um tempo para a pessoa não conseguir ficar
+    // clicando sem parar e a tela ficar piscando
+    temaBotao.disabled = true;
+    setTimeout(_ => {
+        temaBotao.disabled = false;
+    }, 500);
 });
 </script>
     

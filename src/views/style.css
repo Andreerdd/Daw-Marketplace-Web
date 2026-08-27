@@ -1,5 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 
+/* Visualmente escondido */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+
 :root {
 	--accent: #1baef1;
 	--accent-alt: #1382eb;
@@ -457,7 +471,7 @@ label:has(input[type="number"]) {
 }
 
 .input:disabled:not(input[type="file"]) {
-  background-color: var(--background);
+  background-color: var(--background) !important;
 }
 
 .input input[type="file"] {
@@ -1194,6 +1208,7 @@ html::-webkit-scrollbar-thumb:hover {
     width: min(1100px, 96%);
     margin: 24px auto;
     min-height: 70vh;
+    flex: 1;
 }
 
 .chat-users {
@@ -1232,12 +1247,10 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 .chat-messages {
-    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 10px;
     overflow-y: auto;
-    max-height: 58vh;
     padding-right: 6px;
 }
 
@@ -1267,6 +1280,7 @@ html::-webkit-scrollbar-thumb:hover {
 
 .chat-form {
     display: flex;
+    justify-content: flex-end;
     gap: 8px;
 }
 
@@ -1277,6 +1291,7 @@ html::-webkit-scrollbar-thumb:hover {
     border: none;
     border-radius: 8px;
     padding: 10px;
+    max-height: 80px;
 }
 
 .chat-form button {

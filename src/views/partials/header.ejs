@@ -1,4 +1,4 @@
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>Jueguitos</title>
@@ -10,7 +10,7 @@
         <div class="header-left">
             <a class="a jueguitos-logo" href="/"><span class="icone-logo material-symbols-outlined" style="font-weight: 1000">playing_cards</span>jueguitos</a>
         
-            <div class="categoria-header">
+            <div class="categoria-header" tabindex="0" role="button" aria-haspopup="true" aria-expanded="false">
                 <span>Categorias</span>
                 <div class="categoria-header-menu" style="z-index: 100">
                     <a href="/categoria/jogos-de-cartas">Jogos de Cartas</a>
@@ -22,8 +22,9 @@
         <div class="header-right">
             <div class="searchbar">
                 <span class="material-symbols-outlined" style="font-weight: 1000">search</span>
-                <form method="post" action="/pesquisa">
-                    <input type="text" name="search">
+                <form method="post" action="/pesquisa" aria-label="Pesquisar produtos">
+                    <label for="search-input" class="sr-only">Pesquisar</label>
+                    <input id="search-input" type="text" name="search" aria-label="Pesquisar produtos">
                 </form>
             </div>
 
@@ -59,5 +60,23 @@
             tamanhoCarrinho += produto.quantidade;
         });
         const carrinhoNumero = document.getElementById("carrinho-numero");
-        carrinhoNumero.textContent = tamanhoCarrinho;
+        if (carrinhoNumero) carrinhoNumero.textContent = tamanhoCarrinho;
+
+        // Accessibility: toggle aria-expanded for categoria-header on keyboard focus and activation
+        const categoriaHeader = document.querySelector('.categoria-header');
+        const categoriaMenu = document.querySelector('.categoria-header-menu');
+        if (categoriaHeader) {
+            categoriaHeader.addEventListener('focusin', () => categoriaHeader.setAttribute('aria-expanded', 'true'));
+            categoriaHeader.addEventListener('focusout', () => categoriaHeader.setAttribute('aria-expanded', 'false'));
+            categoriaHeader.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const expanded = categoriaHeader.getAttribute('aria-expanded') === 'true';
+                    categoriaHeader.setAttribute('aria-expanded', String(!expanded));
+                    if (!expanded) {
+                        categoriaMenu?.querySelector('a')?.focus();
+                    }
+                }
+            });
+        }
     </script>
